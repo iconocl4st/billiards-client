@@ -54,7 +54,9 @@ const Play = () => {
                 <button disabled={!timed}>Go to Timer control</button>
                 <br/>
                 <label>Show timer on table</label>
-                <input type="checkbox"/>
+                <input
+                    disabled={!timed}
+                    type="checkbox"/>
             </div>
             <div style={compGridStyle(2)}>
                 <button>Take snapshot</button>
