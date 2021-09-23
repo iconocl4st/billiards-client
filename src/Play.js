@@ -17,8 +17,6 @@ const Play = () => {
             <button>Take snapshot</button>
             <button>Reset to snapshot</button>
             <br/>
-
-
         </>
     )
 };
