@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 const NavigationBar = ({setPath, previous, current}) => (
     <>
         {previous.map(
-            ({label, location}) => <button onClick={() => setPath(location)}>{label}</button>
+            ({label, location}) => <button key={label} onClick={() => setPath(location)}>{label}</button>
         )}
         <label>{current}</label>
     </>
