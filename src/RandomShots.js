@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import {compGridStyle, gridStyle} from "./styles";
 
 const RandomShots = () => {
     const [distribution, setDistribution] = useState('uniform');
@@ -11,21 +12,25 @@ const RandomShots = () => {
     const [seed, setSeed] = useState(1776);
     const [minCut, setMinCut] = useState(0.02);
     const [controlCue, setControlCue] = useState(false);
-
     const generate = () => {
 
     };
     return (
         <>
-            <div>
+            <div style={compGridStyle(0)}>
                 <label>Distribution</label>
                 <select value={distribution} onChange={({target: {value}}) => setDistribution(value)}>
                     <option value="uniform">Uniform</option>
                     <option value="spot">Spot shot</option>
                 </select>
+                <br/>
+                <label>Generate Destination</label>
+                <input
+                    type="checkbox"
+                    checked={controlCue}
+                    onChange={({target: {checked}}) => setControlCue(checked)}/>
             </div>
-            <br/>
-            <div>
+            <div style={compGridStyle(1)}>
                 <label>Allow cue ball on rail</label>
                 <input
                     disabled={distribution !== 'spot'}
@@ -39,9 +44,14 @@ const RandomShots = () => {
                     type="checkbox"
                     checked={objOnRail}
                     onChange={({target: {checked}}) => setObjOnRail(checked)}/>
-            </div>
-            <br/>
-            <div>
+                <br/>
+                <label>Show grid</label>
+                <input
+                    disabled={distribution !== 'spot'}
+                    type="checkbox"
+                    checked={showGrid}
+                    onChange={({target: {checked}}) => setShowGrid(checked)}/>
+                <br/>
                 <label>Number of Rows</label>
                 <input
                     disabled={distribution !== 'spot'}
@@ -57,16 +67,8 @@ const RandomShots = () => {
                     onChange={({target: {value}}) => setNumCols(Number(value))}
                     min={1}
                     type="number"/>
-                <br/>
-                <label>Show grid</label>
-                <input
-                    disabled={distribution !== 'spot'}
-                    type="checkbox"
-                    checked={showGrid}
-                    onChange={({target: {checked}}) => setShowGrid(checked)}/>
             </div>
-            <br/>
-            <div>
+            <div style={compGridStyle(2)}>
                 <label>Seed</label>
                 <input
                     type="checkbox"
@@ -78,9 +80,7 @@ const RandomShots = () => {
                     onChange={({target: {value}}) => setSeed(value)}
                     min={0}
                     type="number"/>
-            </div>
-            <br/>
-            <div>
+                <br/>
                 <label>Cut Threshold</label>
                 <input
                     value={minCut}
@@ -90,16 +90,9 @@ const RandomShots = () => {
                     max={1}
                     type="number"/>
             </div>
-            <br/>
-            <div>
-                <label>Generate Destination</label>
-                <input
-                    type="checkbox"
-                    checked={controlCue}
-                    onChange={({target: {checked}}) => setControlCue(checked)}/>
+            <div style={compGridStyle(3)}>
+                <button onClick={generate}>Generate</button>
             </div>
-            <br/>
-            <button onClick={generate}>Generate</button>
         </>
     )
 };

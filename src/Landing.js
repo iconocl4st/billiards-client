@@ -9,6 +9,11 @@ import RandomShots from "./RandomShots";
 import Design from './Design';
 import Drills from './Drills';
 import Layouts from "./Layouts";
+import CheckerBoard from "./Settings/CheckerBoard";
+import Camera from "./Settings/CameraLocation";
+import Projector from "./Settings/Projector";
+import Table from "./Settings/Table";
+import ApiStatus from "./Settings/ApiStatus";
 
 
 const tree = {
@@ -43,15 +48,28 @@ const tree = {
         label: 'Configure',
         children: [{
             type: 'leaf',
-            label: 'Projector',
-            component: () => <div>Yup</div>
+            label: 'Projector location',
+            component: Projector
+        }, {
+            type: 'leaf',
+            label: 'Camera location',
+            component: Camera
+        }, {
+            type: 'leaf',
+            label: 'Checkerboard',
+            component: CheckerBoard
+        }, {
+            type: 'leaf',
+            label: 'Table Dimensions',
+            component: Table
+        }, {
+            type: 'leaf',
+            label: 'Api Statuses',
+            component: ApiStatus
         }]
     }]
 };
 
-
-const Landing = () => {
-    return <ComponentTree tree={tree}/>
-};
+const Landing = () => <ComponentTree tree={tree}/>;
 
 export default Landing;

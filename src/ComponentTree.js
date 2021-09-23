@@ -1,11 +1,22 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
+import {NAVIGATION_STYLE, PRIMARY_STYLE, navGridStyle, compGridStyle} from "./styles";
+
+const NUM_NAVIGATION_COLS = 5;
 
 const NavigationBar = ({setPath, previous, current}) => (
     <>
         {previous.map(
-            ({label, location}) => <button key={label} onClick={() => setPath(location)}>{label}</button>
+            ({label, location}, index) => (
+                <div style={navGridStyle(index)}>
+                    <button key={label} onClick={() => setPath(location)}>
+                        {label}
+                    </button>
+                </div>
+            )
         )}
-        <label>{current}</label>
+        <div style={navGridStyle(previous.length)}>
+            <label>{current}</label>
+        </div>
     </>
 )
 
@@ -24,9 +35,12 @@ const parseBranch = (setPath, {type, label, ...node}, path, navigation, index) =
     if (type === 'leaf') {
         return () => (
             <>
-                <NavigationBar previous={navigation} current={label} setPath={setPath}/>
-                <br/>
-                <node.component/>
+                <div style={NAVIGATION_STYLE}>
+                    <NavigationBar previous={navigation} current={label} setPath={setPath}/>
+                </div>
+                <div style={PRIMARY_STYLE}>
+                    <node.component/>
+                </div>
             </>
         );
     }
@@ -35,12 +49,17 @@ const parseBranch = (setPath, {type, label, ...node}, path, navigation, index) =
     }
     return () => (
         <>
-            <NavigationBar previous={navigation} current={label} setPath={setPath}/>
-            <br/>
-            <div>
+            <div style={NAVIGATION_STYLE}>
+                <NavigationBar previous={navigation} current={label} setPath={setPath}/>
+            </div>
+            <div style={PRIMARY_STYLE}>
                 {node.children.map(
                     ({label}, index) => (
-                        <button key={label} onClick={() => setPath([...path, index])}>{label}</button>
+                        <div style={compGridStyle(index)}>
+                            <button key={label} onClick={() => setPath([...path, index])}>
+                                {label}
+                            </button>
+                        </div>
                     )
                 )}
             </div>

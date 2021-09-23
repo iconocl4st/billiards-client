@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 
-const Camera = () => {
+const CheckerBoard = () => {
     return (
         <>
         </>
     )
 };
 
-export default Camera;
+export default CheckerBoard;
