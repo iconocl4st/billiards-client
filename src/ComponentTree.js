@@ -7,8 +7,8 @@ const NavigationBar = ({setPath, previous, current}) => (
     <>
         {previous.map(
             ({label, location}, index) => (
-                <div style={navGridStyle(index)}>
-                    <button key={label} onClick={() => setPath(location)}>
+                <div key={`${label}-${index}`} style={navGridStyle(index)}>
+                    <button onClick={() => setPath(location)}>
                         {label}
                     </button>
                 </div>
@@ -55,8 +55,8 @@ const parseBranch = (setPath, {type, label, ...node}, path, navigation, index) =
             <div style={PRIMARY_STYLE}>
                 {node.children.map(
                     ({label}, index) => (
-                        <div style={compGridStyle(index)}>
-                            <button key={label} onClick={() => setPath([...path, index])}>
+                        <div key={label} style={compGridStyle(index)}>
+                            <button onClick={() => setPath([...path, index])}>
                                 {label}
                             </button>
                         </div>
