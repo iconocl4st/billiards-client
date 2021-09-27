@@ -13,7 +13,7 @@ import CheckerBoard from "./Settings/CheckerBoard";
 import Camera from "./Settings/CameraLocation";
 import Projector from "./Settings/Projector";
 import Table from "./Settings/Table";
-import ApiStatus from "./Settings/ApiStatus";
+import ApiStatus from "./Settings/ApiStatuses";
 
 
 const tree = {
@@ -48,6 +48,10 @@ const tree = {
         label: 'Configure',
         children: [{
             type: 'leaf',
+            label: 'Api Statuses',
+            component: ApiStatus
+        }, {
+            type: 'leaf',
             label: 'Projector location',
             component: Projector
         }, {
@@ -62,11 +66,7 @@ const tree = {
             type: 'leaf',
             label: 'Table Dimensions',
             component: Table
-        }, {
-            type: 'leaf',
-            label: 'Api Statuses',
-            component: ApiStatus
-        }]
+        },]
     }]
 };
 
