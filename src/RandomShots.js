@@ -1,98 +1,105 @@
-import React, { useState } from 'react';
-import {compGridStyle, gridStyle} from "./styles";
+import React, {useState} from 'react';
+import {CONTROLLER_STYLE_2} from "./styles";
+import {DEFAULT_GRID_STATE, GridControlUi} from "./GridControl";
+import {BoolSetting, MaybeNumber, NumberSetting, OptionSetting} from "./Common";
+import {generateShot} from "./generate_shot";
+
 
 const RandomShots = () => {
+    const [gridState, setGridState] = useState(DEFAULT_GRID_STATE);
     const [distribution, setDistribution] = useState('uniform');
-    const [numRows, setNumRows] = useState(3);
-    const [numCols, setNumCols] = useState(7);
-    const [showGrid, setShowGrid] = useState(true);
     const [cueOnRail, setCueOnRail] = useState(false);
     const [objOnRail, setObjOnRail] = useState(false);
     const [useSeed, setUseSeed] = useState(false);
     const [seed, setSeed] = useState(1776);
     const [minCut, setMinCut] = useState(0.02);
-    const [controlCue, setControlCue] = useState(false);
-    const generate = () => {
-
-    };
+    const [destination, setDestination] = useState(false);
+    const [destinationRadius, setDestinationRadius] = useState(3);
+    const [destinationSpin, setDestinationSpin] = useState(0);
+    const [destinationSpeed, setDestinationSpeed] = useState(1);
+    const generate = () => generateShot(
+        { distribution, minCut, destination, destinationRadius, destinationSpin,
+        gridState, useSeed, seed, cueOnRail, objOnRail},
+        message => console.log('message', message)
+    );
     return (
         <>
-            <div style={compGridStyle(0)}>
-                <label>Distribution</label>
-                <select value={distribution} onChange={({target: {value}}) => setDistribution(value)}>
-                    <option value="uniform">Uniform</option>
-                    <option value="spot">Spot shot</option>
-                </select>
-                <br/>
-                <label>Generate Destination</label>
-                <input
-                    type="checkbox"
-                    checked={controlCue}
-                    onChange={({target: {checked}}) => setControlCue(checked)}/>
+            <br/>
+            <MaybeNumber
+                label="Seed"
+                use={useSeed}
+                setUse={setUseSeed}
+                value={seed}
+                setValue={setSeed}
+                min={0}
+            />
+            <OptionSetting
+                label="Distribution"
+                value={distribution}
+                setValue={setDistribution}
+            >
+                <option value="uniform">Uniform</option>
+                <option value="spot">Spot shot</option>
+            </OptionSetting>
+            <GridControlUi
+                style={{}}
+                disabled={distribution !== 'spot'}
+                gridState={gridState}
+                setGridState={setGridState}
+            />
+            <BoolSetting
+                label="Allow cue ball on rail"
+                value={cueOnRail}
+                setValue={setCueOnRail}
+                disabled={distribution !== 'spot'}
+            />
+            <BoolSetting
+                label="Allow object ball on rail"
+                value={objOnRail}
+                setValue={setObjOnRail}
+                disabled={distribution !== 'spot'}
+            />
+            <NumberSetting
+                label="Cut Threshold"
+                value={minCut}
+                onChange={setMinCut}
+                min={0}
+                step={0.01}
+                max={1}
+            />
+            <BoolSetting
+                label="Generate Destination"
+                value={destination}
+                setValue={setDestination}
+            />
+            <NumberSetting
+                label="Destination Radius"
+                value={destinationRadius}
+                setValue={setDestinationRadius}
+                min={0}
+                set={0.5}
+                disabled={!destination}
+            />
+            <NumberSetting
+                label="Destination Max Spin"
+                value={destinationSpin}
+                setValue={setDestinationSpin}
+                step={0.1}
+                disabled={!destination}
+            />
+            <NumberSetting
+                label="Destination Max Speed"
+                value={destinationSpeed}
+                setValue={setDestinationSpeed}
+                min={0}
+                step={0.1}
+                disabled={!destination}
+            />
+            <div style={CONTROLLER_STYLE_2}>
+                <button onClick={generate}>Generate!</button>
             </div>
-            <div style={compGridStyle(1)}>
-                <label>Allow cue ball on rail</label>
-                <input
-                    disabled={distribution !== 'spot'}
-                    type="checkbox"
-                    checked={cueOnRail}
-                    onChange={({target: {checked}}) => setCueOnRail(checked)}/>
-                <br/>
-                <label>Allow object ball on rail</label>
-                <input
-                    disabled={distribution !== 'spot'}
-                    type="checkbox"
-                    checked={objOnRail}
-                    onChange={({target: {checked}}) => setObjOnRail(checked)}/>
-                <br/>
-                <label>Show grid</label>
-                <input
-                    disabled={distribution !== 'spot'}
-                    type="checkbox"
-                    checked={showGrid}
-                    onChange={({target: {checked}}) => setShowGrid(checked)}/>
-                <br/>
-                <label>Number of Rows</label>
-                <input
-                    disabled={distribution !== 'spot'}
-                    value={numRows}
-                    onChange={({target: {value}}) => setNumRows(Number(value))}
-                    min={1}
-                    type="number"/>
-                <br/>
-                <label>Number of Columns</label>
-                <input
-                    disabled={distribution !== 'spot'}
-                    value={numCols}
-                    onChange={({target: {value}}) => setNumCols(Number(value))}
-                    min={1}
-                    type="number"/>
-            </div>
-            <div style={compGridStyle(2)}>
-                <label>Seed</label>
-                <input
-                    type="checkbox"
-                    checked={useSeed}
-                    onChange={({target: {checked}}) => setUseSeed(checked)}/>
-                <input
-                    disabled={useSeed === false}
-                    value={seed}
-                    onChange={({target: {value}}) => setSeed(value)}
-                    min={0}
-                    type="number"/>
-                <br/>
-                <label>Cut Threshold</label>
-                <input
-                    value={minCut}
-                    onChange={({target: {value}}) => setMinCut(Number(value))}
-                    min={0}
-                    step={0.01}
-                    max={1}
-                    type="number"/>
-            </div>
-            <div style={compGridStyle(3)}>
-                <button onClick={generate}>Generate</button>
-            </div>
+            <br/>
+            <br/>
         </>
     )
 };

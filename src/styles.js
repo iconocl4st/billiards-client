@@ -9,44 +9,52 @@ export const COLORS_ARRAY = [
 ];
 
 const NAVIGATION_HEIGHT = 30;
-const COMPONENT_HEIGHT = 150;
+const COMPONENT_HEIGHT = 100;
 
 export const NAVIGATION_STYLE = {
-    position: 'relative',
-    backgroundColor: COLORS_ARRAY[3],
-    color: COLORS_ARRAY[1],
-    width: '100%',
+    position: 'absolute',
+    width: '96%',
     height: NAVIGATION_HEIGHT,
-    top: 0,
+    left: '2%',
+    top: 10,
 };
-export const PRIMARY_STYLE = {
-    position: 'fixed',
-    backgroundColor: COLORS_ARRAY[0],
+export const CONTENT_STYLE = {
+    position: 'absolute',
+    width: '96%',
+    left: '2%',
+    top: NAVIGATION_HEIGHT + 20,
+    backgroundColor: COLORS_ARRAY[4],
     color: COLORS_ARRAY[1],
-    width: '100%',
-    height: '90%',
-    top: 1.1 * NAVIGATION_HEIGHT,
-    // height: HEIGHT,
+    border: '1px solid white'
 };
 
-export const gridStyle = (index, ncols, voffset, hoffset, height) => {
+export const LABEL_STYLE = {position: 'absolute', left: '1%', width: '33%'};
+export const CONTROLLER_STYLE = {position: 'absolute', left: '33%', width: '33%'};
+export const CONTROLLER_STYLE_2 = {position: 'absolute', left: '66%', width: '33%'};
+
+export const gridStyle = (index, ncols, height) => {
     const row = (index - index % ncols) / ncols;
     const col = index % ncols;
     return ({
-        position: 'fixed',
-        textAlign: 'center',
-        backgroundColor: (row % 2 === 0) ? COLORS_ARRAY[4] : COLORS_ARRAY[2],
-        top: voffset + height * row,
-        left: hoffset + (100 * col / ncols) + '%',
-        width: (100 / ncols) + '%',
-        height: height,
-        border: '1px solid black',
+        position: 'absolute',
+        display: 'grid',
+        placeItems: 'center',
+        backgroundColor: COLORS_ARRAY[4],
+        color: COLORS_ARRAY[1],
+        // backgroundColor: (row % 2 === 0) ? COLORS_ARRAY[4] : COLORS_ARRAY[2],
+        top: (height + 5) * row,
+        left: (100 * col / ncols) + '%',
+        width: (98 / ncols) + '%',
+        height,
+        border: '1px solid white',
     });
 };
 
-export const navGridStyle = (index) => ({
-    ...gridStyle(index, 5, 0, 0, NAVIGATION_HEIGHT),
-    backgroundColor: COLORS_ARRAY[3],
-    color: COLORS_ARRAY[1],
-});
-export const compGridStyle = (index) => gridStyle(index, 2, PRIMARY_STYLE.top, 0, COMPONENT_HEIGHT);
+export const compGridStyle = (index, ncols) => gridStyle(
+    index,
+    ncols || 3,
+    COMPONENT_HEIGHT);
+
+export const SINGLE_COMP_STYLE = {
+    ...compGridStyle(0, 1)
+};

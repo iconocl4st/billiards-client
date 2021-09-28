@@ -70,13 +70,10 @@ const ScenesList = ({scenes}) => (
 
 const Design = () => {
     const [editingState, setEditingState] = useState({editing: false});
-
-    
-
     if (editingState.editing) {
-	// return <SceneEditor uuid={editingState.uuid} />
+		return <SceneEditor uuid={editingState.uuid} />
     } else {
-	return <ScenesList scenes={SCENES} edit={uuid=>setEditingState({editing:true, uuid})} />;
+		return <ScenesList scenes={SCENES} edit={uuid=>setEditingState({editing:true, uuid})} />;
     }
 };
 
