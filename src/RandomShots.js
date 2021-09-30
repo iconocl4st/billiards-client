@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {CONTROLLER_STYLE_2} from "./styles";
+import {CONTROLLER_STYLE, CONTROLLER_STYLE_2, LABEL_STYLE} from "./styles";
 import {DEFAULT_GRID_STATE, GridControlUi} from "./GridControl";
 import {BoolSetting, MaybeNumber, NumberSetting, OptionSetting} from "./Common";
 import {generateShot} from "./generate_shot";
@@ -17,10 +17,15 @@ const RandomShots = () => {
     const [destinationRadius, setDestinationRadius] = useState(3);
     const [destinationSpin, setDestinationSpin] = useState(0);
     const [destinationSpeed, setDestinationSpeed] = useState(1);
+    const [statusMessage, setStatusMessage] = useState('no message');
+    const [shotStepsType, setShotStepsType] = useState('strike');
     const generate = () => generateShot(
         { distribution, minCut, destination, destinationRadius, destinationSpin,
-        gridState, useSeed, seed, cueOnRail, objOnRail},
-        message => console.log('message', message)
+        gridState, useSeed, seed, cueOnRail, objOnRail, shotStepsType},
+        message => {
+            console.log('message', message);
+            setStatusMessage(message);
+        }
     );
     return (
         <>
@@ -33,6 +38,17 @@ const RandomShots = () => {
                 setValue={setSeed}
                 min={0}
             />
+            <OptionSetting
+                label="Shot steps"
+                value={shotStepsType}
+                setValue={setShotStepsType}
+            >
+                <option value="strike">Strike</option>
+                <option value="bank">Bank</option>
+                <option value="kick">Kick</option>
+                <option value="combo">Combo</option>
+                <option value="kiss">Kiss</option>
+            </OptionSetting>
             <OptionSetting
                 label="Distribution"
                 value={distribution}
@@ -95,6 +111,12 @@ const RandomShots = () => {
                 step={0.1}
                 disabled={!destination}
             />
+            <div style={LABEL_STYLE}>
+                <label>Status:</label>
+            </div>
+            <div style={CONTROLLER_STYLE}>
+                <label>{statusMessage}</label>
+            </div>
             <div style={CONTROLLER_STYLE_2}>
                 <button onClick={generate}>Generate!</button>
             </div>

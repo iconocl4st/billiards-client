@@ -1,31 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import axios from 'axios';
 import useAxios from 'axios-hooks';
 import _ from 'lodash';
 import {SINGLE_COMP_STYLE} from "../styles";
-
-const APIS = [{
-    label: 'Shots',
-    url: 'http://localhost:18081/'
-}, {
-    label: 'Configuration',
-    url: 'http://localhost:18086/'
-}, {
-    label: 'Image Processing',
-    url: 'http://localhost:18084/'
-}, {
-    label: 'Layouts',
-    url: 'http://localhost:18083/'
-}, {
-    label: 'Graphics',
-    url: 'http://localhost:18082/'
-}, {
-    label: 'Projector',
-    url: 'http://localhost:18080/'
-}, {
-    label: 'Attempts',
-    url: 'http://localhost:18085/'
-}];
+import {APIS} from "../Apis";
 
 const getConnectionStatus = ({data, loading, error}) => {
     if (error) {
