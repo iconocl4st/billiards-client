@@ -4,6 +4,7 @@ import axios from 'axios';
 import _ from 'lodash';
 import {ColorSelector, Point} from "../Common";
 import {SINGLE_COMP_STYLE} from "../styles";
+import {URLS} from "../Apis";
 
 const BALL_HEIGHT = 30;
 
@@ -156,13 +157,15 @@ const createPutData = config => ({
 	}))
     }
 });
+
+
 // {position: 'absolute', left: '0%', width: '100%'}
 // style={{position: 'absolute', top: SINGLE_COMP_STYLE.top, height: 'auto', width: '100%'}}
 const Table = () => {
-	const [{data, loading, error}, refetch] = useAxios('http://localhost:18086/');
+	const [{data, loading, error}, refetch] = useAxios(URLS.config);
 	const putData = createPutData(_.get(data, 'config', {}));
 	const sendPutData = async () => {
-		await axios.put('http://localhost:18086/', putData);
+		await axios.put(URLS.config, putData);
 		await refetch();
 	}
 	return (

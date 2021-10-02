@@ -22,7 +22,8 @@ export const createParams = ({
             kiss: [{type: 'cue'}, {type: 'object'}, {type: 'object'}],
         }[shotStepsType],
         distribution,
-        dimensions
+        dimensions,
+        'ball-radius': 1.13
     };
     if (destination) {
         params['destination'] = {
@@ -68,9 +69,11 @@ export const generateShot = async (state, listener) => {
         return;
     }
     const {table} = config;
-    const {dims: dimensions} = table;
+    const {dimensions} = table;
+
     listener(cmessage);
 
+    // TODO: remove the following line
     const params = createParams(state, dimensions);
     const {data: {message: lmessage, locations, success: lsuccess}, status: lstatus} = await axios.post(
         URLS.layouts + 'random/locations/', {params});
@@ -81,12 +84,12 @@ export const generateShot = async (state, listener) => {
     listener(lmessage);
     const {data: {message: smessage, shots, success: ssuccess}, status: sstatus} = await axios.post(
         URLS.shots, {
-            locations,
             params: {
-                'cut-tolerance': state.minCut,
                 table,
+                locations,
+                'cut-tolerance': state.minCut,
                 range: {begin: 0, end: 50},
-                'step-types': {
+                'step-wild-cards': {
                     strike: ['cue', 'strike', 'pocket'],
                     bank: ['cue', 'strike', 'rail', 'pocket'],
                     kick: ['cue', 'rail', 'strike', 'pocket'],
@@ -112,10 +115,11 @@ export const generateShot = async (state, listener) => {
     const shot = shots[Math.floor(Math.random() * numShots)];
     const {data: {message: imessage, 'shot-info': shotInfo, success: isuccess}, status: istatus} = await axios.post(
         URLS.shots + 'info/', {
-            params: {},
-            table,
-            locations,
-            shot
+            params: {
+                table,
+                locations,
+                shot
+            },
         });
     if (!isuccess || istatus !== 200) {
         listener('Unable to retrieve shot information');
@@ -127,10 +131,11 @@ export const generateShot = async (state, listener) => {
 
     const {data: {message: gmessage, graphics, success: gsuccess}, status: gstatus} = await axios.post(
         URLS.graphics + 'shot-info/', {
-            params: {},
-            table,
-            locations,
-            'shot-info': shotInfo,
+            params: {
+                table,
+                locations,
+                'shot-info': shotInfo,
+            },
         });
     if (!gsuccess || gstatus !== 200) {
         listener('Unable to retrieve graphics');
