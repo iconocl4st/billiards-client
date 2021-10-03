@@ -1,7 +1,7 @@
 
 export const URLS = {
-    projector: 'http://10.0.0.160:18080/',
-    // projector: 'http://localhost:18080/',
+    // projector: 'http://10.0.0.160:18080/',
+    projector: 'http://localhost:18080/',
     shots: 'http://localhost:18081/',
     graphics: 'http://localhost:18082/',
     layouts: 'http://localhost:18083/',
