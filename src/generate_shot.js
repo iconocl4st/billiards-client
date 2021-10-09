@@ -1,6 +1,95 @@
 import axios from 'axios';
 import {URLS} from "./Apis";
 
+
+const WILD_CARDS = {
+    strike: [{
+        'step-type': 'cue',
+        'choice-type': 'any',
+    }, {
+        'step-type': 'strike',
+        'choice-type': 'any',
+    }, {
+        'step-type': 'pocket',
+        'choice-type': 'any',
+    }],
+    bank: [{
+        'step-type': 'cue',
+        'choice-type': 'any',
+    }, {
+        'step-type': 'strike',
+        'choice-type': 'any',
+    }, {
+        'step-type': 'rail',
+        'choice-type': 'any',
+    }, {
+        'step-type': 'pocket',
+        'choice-type': 'any',
+    }],
+    kick: [{
+        'step-type': 'cue',
+        'choice-type': 'any',
+    }, {
+        'step-type': 'rail',
+        'choice-type': 'any',
+    }, {
+        'step-type': 'strike',
+        'choice-type': 'any',
+    }, {
+        'step-type': 'pocket',
+        'choice-type': 'any',
+    }],
+    combo: [{
+        'step-type': 'cue',
+        'choice-type': 'any',
+    }, {
+        'step-type': 'strike',
+        'choice-type': 'any',
+    }, {
+        'step-type': 'strike',
+        'choice-type': 'any',
+    }, {
+        'step-type': 'pocket',
+        'choice-type': 'any',
+    }],
+    carom: [{
+        'step-type': 'cue',
+        'choice-type': 'any',
+    }, {
+        'step-type': 'strike',
+        'choice-type': 'any',
+    }, {
+        'step-type': 'kiss',
+        'choice-type': 'any',
+    }, {
+        'step-type': 'pocket',
+        'choice-type': 'any',
+    }],
+    kiss: [{
+        'step-type': 'cue',
+        'choice-type': 'any',
+    }, {
+        'step-type': 'kiss',
+        'choice-type': 'any',
+    }, {
+        'step-type': 'strike',
+        'choice-type': 'any',
+    }, {
+        'step-type': 'pocket',
+        'choice-type': 'any',
+    }],
+};
+
+const REQUIRED_BALLS = {
+    strike: [{type: 'cue'}, {type: 'object', number: 1}],
+    bank: [{type: 'cue'}, {type: 'object', number: 1}],
+    kick: [{type: 'cue'}, {type: 'object', number: 1}],
+    combo: [{type: 'cue'}, {type: 'object', number: 1}, {type: 'object', number: 2}],
+    kiss: [{type: 'cue'}, {type: 'object', number: 1}, {type: 'object', number: 2}],
+    carom: [{type: 'cue'}, {type: 'object', number: 1}, {type: 'object', number: 2}],
+};
+
+
 export const createParams = ({
     distribution,
     destination,
@@ -14,13 +103,7 @@ export const createParams = ({
     objOnRail
 }, dimensions) => {
     const params = {
-        balls: {
-            strike: [{type: 'cue'}, {type: 'object'}],
-            bank: [{type: 'cue'}, {type: 'object'}],
-            kick: [{type: 'cue'}, {type: 'object'}],
-            combo: [{type: 'cue'}, {type: 'object'}, {type: 'object'}],
-            kiss: [{type: 'cue'}, {type: 'object'}, {type: 'object'}],
-        }[shotStepsType],
+        balls: REQUIRED_BALLS[shotStepsType],
         distribution,
         dimensions,
         'ball-radius': 1.13
@@ -83,19 +166,13 @@ export const generateShot = async (state, listener) => {
     }
     listener(lmessage);
     const {data: {message: smessage, shots, success: ssuccess}, status: sstatus} = await axios.post(
-        URLS.shots, {
+        URLS.shots + 'list/', {
             params: {
                 table,
                 locations,
                 'cut-tolerance': state.minCut,
                 range: {begin: 0, end: 50},
-                'step-wild-cards': {
-                    strike: ['cue', 'strike', 'pocket'],
-                    bank: ['cue', 'strike', 'rail', 'pocket'],
-                    kick: ['cue', 'rail', 'strike', 'pocket'],
-                    combo: ['cue', 'strike', 'strike', 'pocket'],
-                    kiss: ['cue', 'strike', 'kiss', 'pocket'],
-                }[state.shotStepsType]
+                'step-wild-cards': WILD_CARDS[state.shotStepsType]
             }
         });
     if (!ssuccess || sstatus !== 200) {

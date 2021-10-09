@@ -1,45 +1,35 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import useAxios from 'axios-hooks';
 import axios from 'axios';
 import _ from 'lodash';
-import { Point } from '../Common';
+import {Point} from '../Common';
 
 
-const DEFAULT = {
-    width: 1920,
-    height: 1080,
-    r: 1
-};
 
 const getLocation = data => ({
-    begin: _.get(data, 'table.offset', {x: DEFAULT.r, y: DEFAULT.r}),
-    up: _.get(data, 'table.up', {x: 0, y: DEFAULT.height - 2 * DEFAULT.r}),
-    right: _.get(data, 'table.right', {x: DEFAULT.width - 2 * DEFAULT.r, y: 0})
+    offset: _.get(data, 'location.offset', {x: -1, y: -1}),
+    up: _.get(data, 'location.up', {x: -1, y: -1}),
+    right: _.get(data, 'location.right', {x: -1, y: -1})
 });
 
 const Projector = () => {
     const [{data, loading, error}, refetch] = useAxios(
-	'http://localhost:18080/location'
+        'http://localhost:18080/location/'
     );
-    const {begin, up, right} = getLocation(data);
+    const {offset, up, right} = getLocation(data);
     const execPut = async d => {
-	await axios.put(
-	    'http://localhost:18080/location',
-	    {
-		begin,
-		up,
-		right,
-		...d
-	    }
-	);
-	await refetch();
+        await axios.put(
+            'http://localhost:18080/location/',
+            { location: { offset, up, right, ...d } }
+        );
+        await refetch();
     };
-    
+
     return (
-            <div>
-	    <Point label="Lower left" point={begin} set={offset => execPut({offset})}/>
-	    <Point label="Up" point={up} set={up => execPut({up})}/>
-	    <Point label="Right" point={right} set={right => execPut({right})}/>
+        <div>
+            <Point label="Offset" step="1" point={offset} set={offset => execPut({offset})}/>
+            <Point label="Up" step="1" point={up} set={up => execPut({up})}/>
+            <Point label="Right" step="1" point={right} set={right => execPut({right})}/>
         </div>
     )
 };
