@@ -4,18 +4,6 @@ import ColorChooser from 'color-chooser';
 import 'color-chooser/lib/color-chooser.css';
 import {CONTROLLER_STYLE, CONTROLLER_STYLE_2, LABEL_STYLE} from "./styles";
 
-export const Point = ({label, point, step, set}) => (
-	<div>
-		<label>{label || 'Point'}</label>
-		<br/>
-		<label>x:</label>
-		<input type="number" step={step || 0.01} value={_.get(point, 'x', 0)}
-			   onChange={({target: {value}}) => set({...point, x: Number(value)})}/>
-		<label>y:</label>
-		<input type="number" step={step || 0.01} value={_.get(point, 'y', 0)}
-			   onChange={({target: {value}}) => set({...point, y: Number(value)})}/>
-	</div>
-);
 
 const compToHex = c => {
 	const h = c.toString(16);
@@ -84,6 +72,59 @@ export const NumberSetting = ({label, value, setValue, ...rest}) => (
         <br/>
     </>
 );
+
+
+export const Point = ({label, point, step, set}) => (
+	<div>
+		<label>{label || 'Point'}</label>
+		<br/>
+		<label>x:</label>
+		<input type="number" step={step || 0.01} value={_.get(point, 'x', 0)}
+			   onChange={({target: {value}}) => set({...point, x: Number(value)})}/>
+		<label>y:</label>
+		<input type="number" step={step || 0.01} value={_.get(point, 'y', 0)}
+			   onChange={({target: {value}}) => set({...point, y: Number(value)})}/>
+	</div>
+);
+
+
+const DefaultedPointSetting = ({label, value: {x, y}, setValue, ...rest}) => (
+	<>
+		<div style={LABEL_STYLE}>
+			<label>{label}:</label>
+		</div>
+		<div style={CONTROLLER_STYLE}>
+			<label>x:</label>
+			<input
+				type="number"
+				value={x}
+				onChange={({target: {value}}) => setValue({y, x: Number(value)})}
+				{...rest}
+			/>
+		</div>
+		<div style={CONTROLLER_STYLE_2}>
+			<label>y:</label>
+			<input
+				type="number"
+				value={y}
+				onChange={({target: {value}}) => setValue({x, y: Number(value)})}
+				{...rest}
+			/>
+		</div>
+		<br/>
+	</>
+);
+
+export const PointSetting = ({label, step, value, setValue, ...rest}) => (
+	<DefaultedPointSetting
+		label={label || "Please provide a label"}
+		step={step || 0.1}
+		value={{x: _.get(value, 'x', 0), y: _.get(value, 'y', 0)}}
+		setValue={setValue}
+		{...rest}
+	/>
+);
+
 
 export const BoolSetting = ({label, value, setValue, ...rest}) => (
 	<>
