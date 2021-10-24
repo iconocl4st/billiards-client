@@ -12,8 +12,10 @@ import Layouts from "./Layouts";
 import CheckerBoard from "./Settings/CheckerBoard";
 import Camera from "./Settings/CameraLocation";
 import Projector from "./Settings/Projector";
-import Table from "./Settings/Table";
 import ApiStatus from "./Settings/ApiStatuses";
+import TableDims from "./Settings/Table/TableDims";
+import Pockets from "./Settings/Table/Pockets";
+import Balls from "./Settings/Table/Balls";
 
 
 const tree = {
@@ -63,9 +65,21 @@ const tree = {
             label: 'Checkerboard',
             component: CheckerBoard
         }, {
-            type: 'leaf',
-            label: 'Table Dimensions',
-            component: Table
+            type: 'branch',
+            label: 'Table',
+            children: [{
+                type: 'leaf',
+                label: 'Balls',
+                component: Balls
+            }, {
+                type: 'leaf',
+                label: 'Pockets',
+                component: Pockets
+            }, {
+                type: 'leaf',
+                label: 'Dimensions',
+                component: TableDims
+            }]
         },]
     }]
 };
