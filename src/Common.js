@@ -157,6 +157,22 @@ export const OptionSetting = ({label, value, setValue, children}) => (
 	</>
 );
 
+export const StringSetting = ({label, value, setValue, ...rest}) => (
+	<>
+		<div style={LABEL_STYLE}>
+			<label>{label}:</label>
+		</div>
+		<div style={CONTROLLER_STYLE}>
+			<input
+				type="text"
+				value={value}
+				onChange={({target: {value}}) => setValue(value)}
+				{...rest}
+			/>
+		</div>
+	</>
+)
+
 
 export const MaybeNumber = ({label, use, setUse, value, setValue, ...rest}) => (
 	<>

@@ -3,6 +3,7 @@ import {CONTROLLER_STYLE, CONTROLLER_STYLE_2, LABEL_STYLE} from "./styles";
 import {DEFAULT_GRID_STATE, GridControlUi} from "./GridControl";
 import {BoolSetting, MaybeNumber, NumberSetting, OptionSetting} from "./Common";
 import {generateShot} from "./generate_shot";
+import GraphicsView from "./GraphicsView";
 
 
 const RandomShots = () => {
@@ -19,13 +20,17 @@ const RandomShots = () => {
     const [destinationSpeed, setDestinationSpeed] = useState(1);
     const [statusMessage, setStatusMessage] = useState('no message');
     const [shotStepsType, setShotStepsType] = useState('strike');
+
+    const [graphics, setGraphics] = useState([]);
+
     const generate = () => generateShot(
         { distribution, minCut, destination, destinationRadius, destinationSpin,
         gridState, useSeed, seed, cueOnRail, objOnRail, shotStepsType},
         message => {
             console.log('message', message);
             setStatusMessage(message);
-        }
+        },
+        setGraphics
     );
     return (
         <>
@@ -120,6 +125,9 @@ const RandomShots = () => {
             <div style={CONTROLLER_STYLE_2}>
                 <button onClick={generate}>Generate!</button>
             </div>
+            <br/>
+
+            <GraphicsView graphics={graphics}/>
             <br/>
             <br/>
         </>

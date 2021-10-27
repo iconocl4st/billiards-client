@@ -144,7 +144,7 @@ const getLocations = async params => {
     };
 }
 
-export const generateShot = async (state, listener) => {
+export const generateShot = async (state, listener, graphics_receiver) => {
     const {data: {message: cmessage, config, success: csuccess}, status: cstatus} = await axios.get(
         URLS.config);
     if (!csuccess || cstatus !== 200) {
@@ -221,6 +221,7 @@ export const generateShot = async (state, listener) => {
     listener(gmessage);
 
     console.log('graphics', graphics);
+    graphics_receiver(graphics);
 
     const {data: {message: pmessage, success: psuccess}, status: pstatus} = await axios.put(
         URLS.projector + 'graphics/', {graphics}

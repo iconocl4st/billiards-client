@@ -6,7 +6,7 @@ import ComponentTree from './ComponentTree';
 
 import Play from './Play';
 import RandomShots from "./RandomShots";
-import Design from './Design';
+import Design from './layouts/Design';
 import Drills from './Drills';
 import Layouts from "./Layouts";
 import CheckerBoard from "./Settings/CheckerBoard";

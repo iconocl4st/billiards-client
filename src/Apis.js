@@ -1,13 +1,18 @@
 
+
+
+// const BASE_URL = '10.0.0.160';
+const BASE_URL = 'localhost';
+
 export const URLS = {
     // projector: 'http://10.0.0.160:18080/',
-    projector: 'http://localhost:18080/',
-    shots: 'http://localhost:18081/',
-    graphics: 'http://localhost:18082/',
-    layouts: 'http://localhost:18083/',
-    image: 'http://localhost:18084/',
-    attempts: 'http://localhost:18085/',
-    config: 'http://localhost:18086/',
+    projector: 'http://' + BASE_URL + ':18080/',
+    shots: 'http://' + BASE_URL + ':18081/',
+    graphics: 'http://' + BASE_URL + ':18082/',
+    layouts: 'http://' + BASE_URL + ':18083/',
+    image: 'http://' + BASE_URL + ':18084/',
+    attempts: 'http://' + BASE_URL + ':18085/',
+    config: 'http://' + BASE_URL + ':18086/',
 }
 
 export const APIS = [{

@@ -4,7 +4,7 @@ export const MOCK_LAYOUTS = [{
 	"layout": {
 		"table-dimensions": {
 			"width": 2,
-			"height: 1,
+			"height": 1,
 		},
 		"balls": [{
 			"ball-type": "object",
