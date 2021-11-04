@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import _ from 'lodash';
 import ColorChooser from 'color-chooser';
 import 'color-chooser/lib/color-chooser.css';
-import {CONTROLLER_STYLE, CONTROLLER_STYLE_2, LABEL_STYLE} from "./styles";
+import {CONTROLLER_STYLE, CONTROLLER_STYLE_2, LABEL_STYLE, WIDE_CONTROLLER_STYLE} from "./styles";
 
 
 const compToHex = c => {
@@ -162,7 +162,7 @@ export const StringSetting = ({label, value, setValue, ...rest}) => (
 		<div style={LABEL_STYLE}>
 			<label>{label}:</label>
 		</div>
-		<div style={CONTROLLER_STYLE}>
+		<div style={WIDE_CONTROLLER_STYLE}>
 			<input
 				type="text"
 				value={value}

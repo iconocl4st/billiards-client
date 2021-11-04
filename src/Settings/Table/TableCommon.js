@@ -27,7 +27,7 @@ export const createPutData = config => ({
         })),
         pockets: _.get(config, 'table.pockets', range(6).map(emptyPocket)).map(pocket => ({
             'inner-segment-1': pocket['inner-segment-1'],
-            'outer-segment-1': pocket['outer-segment-2'],
+            'outer-segment-1': pocket['outer-segment-1'],
             'outer-segment-2': pocket['outer-segment-2']
         }))
     }

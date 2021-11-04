@@ -2,7 +2,7 @@
 // {position: 'absolute', left: '0%', width: '100%'}
 // style={{position: 'absolute', top: SINGLE_COMP_STYLE.top, height: 'auto', width: '100%'}}
 import useAxios from "axios-hooks";
-import {URLS} from "../../Apis";
+import {getApiUrl} from "../../Apis";
 import _ from "lodash";
 import axios from "axios";
 import React from "react";
@@ -50,11 +50,11 @@ const Pocket = ({pocket, setPocket, number}) => (
     </div>
 );
 
-const Pockets = () => {
-    const [{data, loading, error}, refetch] = useAxios(URLS.config);
+const Pockets = ({configUrl}) => {
+    const [{data, loading, error}, refetch] = useAxios(configUrl);
     const putData = createPutData(_.get(data, 'config', {}));
     const sendPutData = async () => {
-        await axios.put(URLS.config, {config: putData});
+        await axios.put(configUrl, {config: putData});
         await refetch();
     }
     return (

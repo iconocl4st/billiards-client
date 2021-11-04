@@ -4,23 +4,23 @@ import axios from 'axios';
 import _ from 'lodash';
 import {PointSetting} from '../Common';
 import {CONTROLLER_STYLE, CONTROLLER_STYLE_2} from "../styles";
-import {URLS} from "../Apis";
+import {getApiUrl} from "../Apis";
 import {createParams} from "../generate_shot";
 
 
-const showBoundary = async (listener) => {
-    const {data: {message: cmessage, config, success: csuccess}, status: cstatus} = await axios.get(
-        URLS.config);
-    if (!csuccess || cstatus !== 200) {
-        listener('Unable to retrieve config');
-        return;
-    }
-    const {table} = config;
-    console.log('config', table);
-    listener(cmessage);
+const showBoundary = async (configData, listener) => {
+    const table = _.get(configData, 'data.config.table', {});
+    // const {data: {message: cmessage, config, success: csuccess}, status: cstatus} = await axios.get(configUrl);
+    // if (!csuccess || cstatus !== 200) {
+    //     listener('Unable to retrieve config');
+    //     return;
+    // }
+    // const {table} = config;
+    console.log('table', table);
+    // listener(cmessage);
 
     const {data: {message: gmessage, graphics, success: gsuccess}, status: gstatus} = await axios.post(
-        URLS.graphics + 'table-boundary/', {
+        getApiUrl("Graphics", configData) + 'table-boundary/', {
             params: {table},
         });
     if (!gsuccess || gstatus !== 200) {
@@ -31,7 +31,7 @@ const showBoundary = async (listener) => {
     listener(gmessage);
 
     const {data: {message: pmessage, success: psuccess}, status: pstatus} = await axios.put(
-        URLS.projector + 'graphics/', {graphics}
+        getApiUrl("Projector", configData) + 'graphics/', {graphics}
     );
     if (!psuccess || pstatus !== 200) {
         console.log('Unable to post graphics');
@@ -47,15 +47,16 @@ const getLocation = data => ({
     right: _.get(data, 'location.right', {x: -1, y: -1})
 });
 
-const Projector = () => {
+const Projector = ({configUrl}) => {
+    const [configData] = useAxios(configUrl);
     const [{data, loading, error}, refetch] = useAxios(
-        URLS.projector + 'location/'
+        getApiUrl("Projector", configData) + 'location/'
     );
     const [message, setMessage] = useState('Ready');
     const {offset, up, right} = getLocation(data);
     const execPut = async d => {
         await axios.put(
-            URLS.projector + 'location/',
+            getApiUrl("Projector", configData) + 'location/',
             { location: { offset, up, right, ...d } }
         );
         await refetch();
@@ -69,7 +70,7 @@ const Projector = () => {
 
             <br/>
             <div style={CONTROLLER_STYLE}>
-                <button onClick={() => showBoundary(setMessage)}>Show Boundary</button>
+                <button onClick={() => showBoundary(configData, setMessage)}>Show Boundary</button>
             </div>
             <div style={CONTROLLER_STYLE_2}>
                 <label>{message}</label>

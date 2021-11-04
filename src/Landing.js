@@ -1,6 +1,6 @@
 
 import React from 'react';
-
+import { useState, useEffect } from 'react';
 
 import ComponentTree from './ComponentTree';
 
@@ -84,6 +84,7 @@ const tree = {
     }]
 };
 
-const Landing = () => <ComponentTree tree={tree}/>;
+
+const Landing = props => <ComponentTree tree={tree} {...props}/>;
 
 export default Landing;

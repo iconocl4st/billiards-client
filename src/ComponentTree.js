@@ -37,7 +37,7 @@ const NavigationBar = ({setPath, previous, current}) => (
     </div>
 )
 
-const parseBranch = (setPath, {type, label, ...node}, path, navigation, index) => {
+const parseBranch = (setPath, {type, label, ...node}, path, navigation, index, props) => {
     if (index < path.length) {
         if (type !== 'branch') {
             return () => <div>Descended past a leaf</div>;
@@ -47,14 +47,15 @@ const parseBranch = (setPath, {type, label, ...node}, path, navigation, index) =
             node.children[path[index]],
             path,
             [...navigation, {label, location: path.slice(0, index)}],
-            index + 1);
+            index + 1,
+            props);
     }
     if (type === 'leaf') {
         return () => (
             <>
                 <NavigationBar previous={navigation} current={label} setPath={setPath}/>
                 <div style={CONTENT_STYLE}>
-                    <node.component/>
+                    <node.component {...props}/>
                 </div>
             </>
         );
@@ -78,9 +79,9 @@ const parseBranch = (setPath, {type, label, ...node}, path, navigation, index) =
     );
 }
 
-const ComponentTree = ({tree}) => {
+const ComponentTree = ({tree, ...props}) => {
     const [path, setPath] = useState([]);
-    const Component = parseBranch(setPath, tree, path,[], 0);
+    const Component = parseBranch(setPath, tree, path,[], 0, props);
     return <Component/>
 };
 

@@ -4,9 +4,11 @@ import {DEFAULT_GRID_STATE, GridControlUi} from "./GridControl";
 import {BoolSetting, MaybeNumber, NumberSetting, OptionSetting} from "./Common";
 import {generateShot} from "./generate_shot";
 import GraphicsView from "./GraphicsView";
+import useAxios from "axios-hooks";
 
 
-const RandomShots = () => {
+const RandomShots = ({configUrl}) => {
+    const [configData] = useAxios(configUrl);
     const [gridState, setGridState] = useState(DEFAULT_GRID_STATE);
     const [distribution, setDistribution] = useState('uniform');
     const [cueOnRail, setCueOnRail] = useState(false);
@@ -30,7 +32,8 @@ const RandomShots = () => {
             console.log('message', message);
             setStatusMessage(message);
         },
-        setGraphics
+        setGraphics,
+        configData
     );
     return (
         <>

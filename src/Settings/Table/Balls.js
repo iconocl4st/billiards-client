@@ -2,7 +2,6 @@ import {ColorSelector} from "../../Common";
 import React from "react";
 import {CONTROLLER_STYLE, LABEL_STYLE, SINGLE_COMP_STYLE} from "../../styles";
 import useAxios from "axios-hooks";
-import {URLS} from "../../Apis";
 import _ from "lodash";
 import axios from "axios";
 import { createPutData, BALL_HEIGHT } from './TableCommon';
@@ -48,11 +47,11 @@ export const Ball = ({ball, setBall, style}) => {
     );
 };
 
-const Balls = () => {
-    const [{data, loading, error}, refetch] = useAxios(URLS.config);
-    const putData = createPutData(_.get(data, 'config', {}));
+const Balls = ({configUrl}) => {
+    const [configData, refetch] = useAxios(configUrl);
+    const putData = createPutData(_.get(configData, 'data.config', {}));
     const sendPutData = async () => {
-        await axios.put(URLS.config, {config: putData});
+        await axios.put(configUrl, {config: putData});
         await refetch();
     }
     return (

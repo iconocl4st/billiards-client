@@ -1,9 +1,11 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import useAxios from 'axios-hooks';
 import _ from 'lodash';
-import {SINGLE_COMP_STYLE} from "../styles";
-import {APIS} from "../Apis";
+import {CONTROLLER_STYLE_2, LABEL_STYLE, SINGLE_COMP_STYLE} from "../styles";
+import {getUrl} from "../Apis";
+import {StringSetting} from "../Common";
+import SaveDelay from "../SaveDelay";
 
 const getConnectionStatus = ({data, loading, error}) => {
     if (error) {
@@ -33,18 +35,18 @@ const getConnectionStatus = ({data, loading, error}) => {
     }
 };
 
-const getStatusStyle = ({background}, index) => {
+const getStatusStyle = ({background}) => {
     return {
         background,
-        position: 'absolute',
+        // position: 'absolute',
         height: 50,
-        top: index * 50,
+        // top: index * 50,
         width: '100%',
         border: '1px solid black',
     }
 };
 
-const ApiStatus = ({label, url, index}) => {
+const ApiStatus = ({"api-name": label, url, saveUrl}) => {
     const [response, refetch] = useAxios(url + 'status/');
     const status = getConnectionStatus(response);
     const refresh = async () => {
@@ -62,34 +64,95 @@ const ApiStatus = ({label, url, index}) => {
         }
         await refresh();
     };
+    useEffect(refresh, [url]);
+    const { value, setValue } = SaveDelay(url, url, saveUrl, {refetch: refresh, ...response});
     return (
-        <div style={getStatusStyle(status, index)}>
-            <label style={{position: 'absolute', left: '0%', width: '18%'}}>{label}</label>
-            <input
-                value={url}
-                onChange={({target: {value}}) => console.log('set to ', value)}
-                style={{position: 'absolute', left: '18%', width: '20%'}} />
-            <label style={{position: 'absolute', left: '40%', width: '20%'}}>{status.label}</label>
-            <label style={{position: 'absolute', left: '60%', width: '20%'}}>{status.uptime}</label>
-            <div style={{position: 'absolute', left: '80%', width: '20%'}}>
-                <button onClick={refresh}>Refresh</button>
-                <button onClick={kill}>Kill</button>
+        <>
+            <div style={getStatusStyle(status)}>
+                <label style={{position: 'absolute', left: '0%', width: '18%'}}>{label}</label>
+                <input
+                    value={value}
+                    onChange={({target: {value}}) => setValue(value)}
+                    style={{position: 'absolute', left: '18%', width: '20%'}}/>
+                <label style={{position: 'absolute', left: '40%', width: '20%'}}>{status.label}</label>
+                <label style={{position: 'absolute', left: '60%', width: '20%'}}>{status.uptime}</label>
+                <div style={{position: 'absolute', left: '80%', width: '20%'}}>
+                    <button onClick={refresh}>Refresh</button>
+                    <button onClick={kill}>Kill</button>
+                </div>
             </div>
-        </div>
+            <br/>
+        </>
     );
 };
 
 
 
-const ApiStatuses = () => {
+const ApiStatuses = ({configUrl, setConfigUrl}) => {
+    const [editorUrl, setEditorUrl] = useState(configUrl);
+    const [networkData, setNetworkData] = useState({data: {}, success: false});
+
+    useEffect(async () => {
+        try {
+            setNetworkData({success: false});
+            const {data, status} = await axios.get(configUrl);
+            setNetworkData({data, success: status === 200});
+        } catch (e) {
+            console.log('unable to get config');
+        }
+    }, [configUrl]);
+
+    const urls = _.get(networkData, 'data.config.urls', []);
+    const updateUrl = async (replaceIndex, newUrl) => {
+        try {
+            if (networkData.loading || networkData.error) {
+                return;
+            }
+
+            await axios.put(configUrl, {
+                config: {
+                    urls: urls.map((api, index) => ({
+                        "api-name": api["api-name"],
+                        url: index === replaceIndex ? newUrl : api.url
+                    }))
+                }
+            });
+
+            const {data, status} = await axios.get(configUrl);
+            setNetworkData({data, success: status === 200});
+        } catch (e) {
+            console.log('unable to update url');
+        }
+    };
+
     return (
-        <div style={SINGLE_COMP_STYLE}>
+        <>
+            <StringSetting
+                label="Configuration URL"
+                value={editorUrl}
+                setValue={newUrl => setEditorUrl(newUrl)}
+            />
+            <br/>
+            <div style={CONTROLLER_STYLE_2}>
+                <button onClick={async() => {
+                    setConfigUrl(editorUrl);
+                    setConfigUrl(editorUrl);
+                }}>
+                    Refresh Urls
+                </button>
+            </div>
+            <br/>
+            <br/>
             {
-                APIS.map((props, index) => (
-                    <ApiStatus key={`api-${index}`} index={index} {...props}/>
+                urls.map((props, index) => (
+                    <ApiStatus
+                        key={`api-${index}`}
+                        saveUrl={newUrl => updateUrl(index, newUrl)}
+                        {...props}
+                    />
                 ))
             }
-        </div>
+        </>
     )
 };
 

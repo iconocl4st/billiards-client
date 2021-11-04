@@ -1,5 +1,6 @@
 import axios from 'axios';
-import {URLS} from "./Apis";
+import {getApiUrl} from "./Apis";
+import _ from 'lodash';
 
 
 const WILD_CARDS = {
@@ -135,38 +136,38 @@ export const createParams = ({
 };
 
 
-const getLocations = async params => {
-    const {data: {locations, success}, status} = await axios.post(
-        URLS.layouts + 'random/locations/', {params});
-    return {
-        success: success && status === 200,
-        locations
-    };
-}
+// const getLocations = async params => {
+//     const {data: {locations, success}, status} = await axios.post(
+//         getUrl("Layouts") + 'random/locations/', {params});
+//     return {
+//         success: success && status === 200,
+//         locations
+//     };
+// }
 
-export const generateShot = async (state, listener, graphics_receiver) => {
-    const {data: {message: cmessage, config, success: csuccess}, status: cstatus} = await axios.get(
-        URLS.config);
-    if (!csuccess || cstatus !== 200) {
-        listener('Unable to retrieve config');
-        return;
-    }
-    const {table} = config;
-    const {dimensions} = table;
+export const generateShot = async (state, listener, graphics_receiver, configData) => {
+    const table = _.get(configData, 'data.config.table', {});
+    const dimensions = _.get(configData, 'data.config.table.dimensions', {});
 
-    listener(cmessage);
+    // const {data: {message: cmessage, config, success: csuccess}, status: cstatus} = await axios.get(
+    //     getUrl("Configuration"));
+    // if (!csuccess || cstatus !== 200) {
+    //     listener('Unable to retrieve config');
+    //     return;
+    // }
+    // listener(cmessage);
 
     // TODO: remove the following line
     const params = createParams(state, dimensions);
     const {data: {message: lmessage, locations, success: lsuccess}, status: lstatus} = await axios.post(
-        URLS.layouts + 'random/locations/', {params});
+        getApiUrl("Layouts", configData) + 'random/locations/', {params});
     if (!lsuccess || lstatus !== 200) {
         listener('Unable to generate positions');
         return;
     }
     listener(lmessage);
     const {data: {message: smessage, shots, success: ssuccess}, status: sstatus} = await axios.post(
-        URLS.shots + 'list/', {
+        getApiUrl("Shots", configData) + 'list/', {
             params: {
                 table,
                 locations,
@@ -191,7 +192,7 @@ export const generateShot = async (state, listener, graphics_receiver) => {
     // only side or only corner...
     const shot = shots[Math.floor(Math.random() * numShots)];
     const {data: {message: imessage, 'shot-info': shotInfo, success: isuccess}, status: istatus} = await axios.post(
-        URLS.shots + 'info/', {
+        getApiUrl("Shots", configData) + 'info/', {
             params: {
                 table,
                 locations,
@@ -207,7 +208,7 @@ export const generateShot = async (state, listener, graphics_receiver) => {
     console.log('shot info', shotInfo);
 
     const {data: {message: gmessage, graphics, success: gsuccess}, status: gstatus} = await axios.post(
-        URLS.graphics + 'shot-info/', {
+        getApiUrl("Graphics", configData) + 'shot-info/', {
             params: {
                 table,
                 locations,
@@ -224,7 +225,7 @@ export const generateShot = async (state, listener, graphics_receiver) => {
     graphics_receiver(graphics);
 
     const {data: {message: pmessage, success: psuccess}, status: pstatus} = await axios.put(
-        URLS.projector + 'graphics/', {graphics}
+        getApiUrl("Projector", configData) + 'graphics/', {graphics}
     );
     if (!psuccess || pstatus !== 200) {
         listener('Unable to post graphics');
