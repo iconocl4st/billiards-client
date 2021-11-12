@@ -12,7 +12,7 @@ export const getApiUrl = (apiName, config) => {
             return api.url;
         }
     }
-    return '';
+    return 'none';
 };
 
 /*

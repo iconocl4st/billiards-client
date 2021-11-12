@@ -196,4 +196,19 @@ export const MaybeNumber = ({label, use, setUse, value, setValue, ...rest}) => (
 		</div>
 		<br/>
 	</>
-)
+);
+
+
+
+
+const DateOptions = {
+	year: 'numeric',
+	month: 'numeric',
+	day: 'numeric',
+	hour12: false
+};
+
+export const FormattedDate = ({unixTime}) => <label>
+	{/*{new Date(unixTime).toLocaleDateString(undefined, DateOptions)}*/}
+	{new Date(unixTime).toLocaleTimeString(undefined, DateOptions)}
+</label>;

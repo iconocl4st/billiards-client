@@ -30,7 +30,7 @@ export const CONTENT_STYLE = {
 
 export const LABEL_STYLE = {position: 'absolute', left: '1%', width: '33%'};
 export const CONTROLLER_STYLE = {position: 'absolute', left: '33%', width: '33%'};
-export const CONTROLLER_STYLE_2 = {position: 'absolute', left: '66%', width: '33%'};
+export const CONTROLLER_STYLE_2 = {position: 'absolute', left: '67%', width: '33%'};
 export const WIDE_CONTROLLER_STYLE = {position: 'absolute', left: '33%', width: '66%'};
 
 export const gridStyle = (index, ncols, height) => {

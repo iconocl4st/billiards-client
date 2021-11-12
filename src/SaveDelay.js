@@ -27,7 +27,6 @@ const SaveDelay = (
 		if (hasTimeOut) {
 			window.clearTimeout(timeOutVar);
 		}
-		console.log('in setValue', newValue);
 		setDelayState({
 			internalState: newValue,
 			hasModifications: true,
