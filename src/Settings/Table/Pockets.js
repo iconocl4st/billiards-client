@@ -5,11 +5,32 @@ import useAxios from "axios-hooks";
 import {getApiUrl} from "../../Apis";
 import _ from "lodash";
 import axios from "axios";
-import React from "react";
+import React, {useState} from "react";
 import {Point} from "../../Common";
 import {CONTROLLER_STYLE, CONTROLLER_STYLE_2, LABEL_STYLE, SINGLE_COMP_STYLE} from "../../styles";
 import { createPutData, BALL_HEIGHT } from './TableCommon';
 import {PointSetting} from "../../Common";
+
+const showPockets = (data, listener) => async () => {
+    const configData = {data};
+    const table = _.get(data, 'config.table', {});
+    const {data: {message, success, graphics}, status} = await axios.post(
+        getApiUrl("Graphics", configData) + "pockets/", {params: {table}});
+    if (status !== 200 || !success) {
+        listener("Unable to retrieve graphics");
+        return;
+    }
+    listener(message);
+    console.log('graphics', graphics);
+
+    const graphicsResp = await axios.put(getApiUrl("Projector", configData) + "graphics/", {graphics});
+    if (graphicsResp.status !== 200 || !graphicsResp.data.success) {
+        listener("Unable to push graphics")
+        return;
+    }
+
+    listener(graphicsResp.data.message);
+};
 
 const PocketNames = [
     "Right lower",
@@ -53,6 +74,7 @@ const Pocket = ({pocket, setPocket, number}) => (
 const Pockets = ({configUrl}) => {
     const [{data, loading, error}, refetch] = useAxios(configUrl);
     const putData = createPutData(_.get(data, 'config', {}));
+    const [statusMsg, setStatusMsg] = useState('Ready');
     const sendPutData = async () => {
         await axios.put(configUrl, {config: putData});
         await refetch();
@@ -64,10 +86,10 @@ const Pockets = ({configUrl}) => {
                 Pockets
             </div>
             <div style={CONTROLLER_STYLE}>
-                <button>Show pockets</button>
+                <button onClick={showPockets(data, setStatusMsg)}>Show pockets</button>
             </div>
             <div style={CONTROLLER_STYLE_2}>
-                <label>Ready</label>
+                <label>{statusMsg}</label>
             </div>
             <br/>
             <br/>

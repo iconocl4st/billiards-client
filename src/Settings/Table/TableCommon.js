@@ -20,6 +20,7 @@ const emptyPocket = (_, number) => ({
 
 export const createPutData = config => ({
     table: {
+        dimensions: _.get(config, 'table.dimensions', {}),
         balls: _.get(config, 'table.balls', range(15).map(emptyBall)).map(({
             name, number, radius, type, color: {r, g, b, a}
         }) => ({

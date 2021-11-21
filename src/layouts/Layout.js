@@ -9,13 +9,27 @@ import Graphics from "./Graphics";
 import {getApiUrl} from "../Apis";
 import _ from 'lodash';
 import SaveDelay from "../SaveDelay";
+import {getLayoutGraphics} from "./getLayoutGraphics";
+import GraphicsView from "../GraphicsView";
 
 
-const LayoutInfo = ({layout, layoutsApi, setView, back, network}) => {
+const LayoutInfo = ({layout, configUrl, layoutsApi, setView, back, network}) => {
     const uuid = _.get(layout, 'info.uuid', 'no uuid found');
     const creationTime = _.get(layout, 'info.creation-time', 0);
     const modificationTime = _.get(layout, 'info.modification-time', 0);
     const existing = _.cloneDeep(_.get(layout, 'entry', {}));
+    const [statusText, logger] = useState('Ready');
+    const [previewGraphics, setPreviewGraphics] = useState([]);
+
+    const updatePreview = async () => {
+        try {
+            const graphics = await getLayoutGraphics({configUrl, logger, uuid});
+            setPreviewGraphics(graphics);
+        } catch (e) {
+            console.error("Unable to preview graphics");
+            console.error(e, e.stack);
+        }
+    }
 
     const save = async updates => {
         const resp = await axios.put(layoutsApi + 'layout/' + uuid, {updates});
@@ -33,7 +47,6 @@ const LayoutInfo = ({layout, layoutsApi, setView, back, network}) => {
         v => save(_.set(existing, 'locations.table-dimensions.width', v)),
         network
     );
-
     const {value: height, setValue: setHeight} = SaveDelay(
         46,
         _.get(layout, 'entry.locations.table-dimensions.height', 46),
@@ -70,7 +83,13 @@ const LayoutInfo = ({layout, layoutsApi, setView, back, network}) => {
             <div style={CONTROLLER_STYLE}><button onClick={() => setView('graphics')}>Edit</button></div>
             <br/>
 
+            <br/>
             <div style={LABEL_STYLE}><label>Preview:</label></div>
+            <div style={CONTROLLER_STYLE}><button onClick={updatePreview}>Draw</button></div>
+            <div style={CONTROLLER_STYLE_2}><label>{statusText}</label></div>
+            <br/>
+            <br/>
+            <GraphicsView graphics={previewGraphics} />
             <br/>
             <br/>
         </>
@@ -78,7 +97,7 @@ const LayoutInfo = ({layout, layoutsApi, setView, back, network}) => {
 };
 
 
-const Layout  = ({uuid, layoutsApi, back, remove, ...props}) => {
+const Layout  = ({uuid, configUrl, layoutsApi, back, remove, ...props}) => {
     const [view, setView] = useState('info');
     const [{data, loading, error}, refetch] = useAxios(layoutsApi + "layout/" + uuid);
 
@@ -90,7 +109,7 @@ const Layout  = ({uuid, layoutsApi, back, remove, ...props}) => {
     return {
         'info': <LayoutInfo
             layoutsApi={layoutsApi} layout={layout} network={network}
-            setView={setView} back={back}
+            setView={setView} back={back} configUrl={configUrl}
         />,
         'balls': <Balls
             layoutsApi={layoutsApi} layout={layout} network={network}

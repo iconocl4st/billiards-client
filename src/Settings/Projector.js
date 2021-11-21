@@ -9,19 +9,17 @@ import {createParams} from "../generate_shot";
 
 
 const showBoundary = async (configData, listener) => {
-    const table = _.get(configData, 'data.config.table', {});
-    // const {data: {message: cmessage, config, success: csuccess}, status: cstatus} = await axios.get(configUrl);
-    // if (!csuccess || cstatus !== 200) {
-    //     listener('Unable to retrieve config');
-    //     return;
-    // }
-    // const {table} = config;
-    console.log('table', table);
-    // listener(cmessage);
+    const locationResp = await axios.get(getApiUrl("Projector", configData) + 'location/');
+    if (locationResp.status !== 200 || !locationResp.data.success) {
+        listener('Unable to retrieve current projector location');
+    }
+    const location = _.get(locationResp, 'data.location');
+    console.log('location', location);
+    listener(locationResp.data.message);
 
     const {data: {message: gmessage, graphics, success: gsuccess}, status: gstatus} = await axios.post(
-        getApiUrl("Graphics", configData) + 'table-boundary/', {
-            params: {table},
+        getApiUrl("Graphics", configData) + 'table-location/', {
+            params: {location},
         });
     if (!gsuccess || gstatus !== 200) {
         console.log('Unable to retrieve graphics');

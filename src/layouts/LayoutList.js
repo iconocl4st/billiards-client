@@ -74,6 +74,8 @@ const LayoutList = ({layouts, edit, create, copy, remove}) => (
         <br/>
         <div style={CONTROLLER_STYLE}>
             <button onClick={create}>New</button>
+            <button>Export</button>
+            <button>Import</button>
         </div>
         <br/>
         <br/>

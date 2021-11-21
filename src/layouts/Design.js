@@ -19,7 +19,7 @@ const LAYOUTS = [{
 }];
 
 
-const Design = ({layoutsApi}) => {
+const Design = ({layoutsApi, configUrl}) => {
 	const [{data, loading, error}, refetch] = useAxios(layoutsApi + "layouts/")
 	const layouts = _.get(data, 'layouts', []);
     const [editingState, setEditingState] = useState({editing: false});
@@ -49,6 +49,7 @@ const Design = ({layoutsApi}) => {
 		return <Layout
 			uuid={editingState.uuid}
 			layoutsApi={layoutsApi}
+			configUrl={configUrl}
 			back={async () => {
 				setEditingState({editing: false});
 				refetch();
@@ -71,6 +72,6 @@ export default ({configUrl}) => {
 	if (layoutsApi === 'none') {
 		return <div>Loading...</div>;
 	}
-	return <Design layoutsApi={layoutsApi}/>;
+	return <Design layoutsApi={layoutsApi} configUrl={configUrl}/>;
 }
 

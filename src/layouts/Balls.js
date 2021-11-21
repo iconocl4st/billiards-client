@@ -4,8 +4,9 @@ import React from "react";
 import SaveDelay from "../SaveDelay";
 import axios from "axios";
 import {MaybeNumber, NumberSetting, OptionSetting, PointSetting} from "../Common";
+import {update, remove, add, insert} from './ArrayModifiers';
 
-const Ball = ({ball, remove, update}) => {
+const Ball = ({ball, removeBall, updateBall}) => {
     const existing = _.cloneDeep(ball);
     const type = _.get(ball, 'ball.type', 'object');
     const setType = newType => {
@@ -13,13 +14,13 @@ const Ball = ({ball, remove, update}) => {
         if (newType === 'number') {
             newBall = _.set(newBall, 'ball.number', 0);
         }
-        update(newBall);
+        updateBall(newBall);
     }
     const number = _.get(ball, 'ball.number', 0);
     const setNumber = type !== 'number' ? (() => {}) : (
-        newNumber => update(_.set(existing, 'ball.number', newNumber)));
+        newNumber => updateBall(_.set(existing, 'ball.number', newNumber)));
     const location = _.get(ball, 'location', {x: 0, y: 0});
-    const setLocation = newLocation => update(_.set(existing, 'location', newLocation));
+    const setLocation = newLocation => updateBall(_.set(existing, 'location', newLocation));
     // TODO: maximum point values...
     return (
         <div style={{border: '1px solid white'}}>
@@ -36,7 +37,7 @@ const Ball = ({ball, remove, update}) => {
             <PointSetting step="1" min="0" label="Location" value={location} setValue={setLocation}/>
             <br/>
             <div style={CONTROLLER_STYLE_2}>
-                <button onClick={remove}>Remove</button>
+                <button onClick={removeBall}>Remove</button>
             </div>
             <br/>
             <br/>
@@ -61,21 +62,14 @@ const Balls = ({layout, layoutsApi, back, network}) => {
         network
     );
 
-    const removeBall = async index => {
-        await saveBalls(currentBalls.filter((_, idx) => idx !== index));
+    const saveBallsAndRefresh = async newBalls => {
+        await saveBalls(newBalls);
         await network.refetch();
-    };
-    const addBall = async () => {
-        await saveBalls([
-            ...currentBalls,
-            {ball: {type: "object"}, location: {x: 0, y: 0}}
-        ]);
-        await network.refetch();
-    };
-    const setBall = async (ball, index) => {
-        await saveBalls(currentBalls.map((b, idx) => (index === idx ? ball : b)));
-        await network.refetch();
-    };
+    }
+    const initial = {ball: {type: "object"}, location: {x: 0, y: 0}};
+    const removeBall = remove(saveBallsAndRefresh, currentBalls);
+    const addBall = add(saveBallsAndRefresh, currentBalls, initial);
+    const updateBall = update(saveBallsAndRefresh, currentBalls);
 
     return (<>
         <div style={LABEL_STYLE}>Located Balls</div>
@@ -88,8 +82,8 @@ const Balls = ({layout, layoutsApi, back, network}) => {
                 <Ball
                     key={`ball-${index}`}
                     ball={ball}
-                    update={b => setBall(b, index)}
-                    remove={() => removeBall(index)}/>
+                    updateBall={updateBall(index)}
+                    removeBall={removeBall(index)}/>
             ))
         }
         <br/>
