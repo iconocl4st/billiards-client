@@ -2,10 +2,10 @@ import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import useAxios from 'axios-hooks';
 import _ from 'lodash';
-import {CONTROLLER_STYLE_2, LABEL_STYLE, SINGLE_COMP_STYLE} from "../styles";
-import {getUrl} from "../Apis";
+import {CONTROLLER_STYLE_2, BorderedStyle} from "../styles";
 import {StringSetting} from "../Common";
 import SaveDelay from "../SaveDelay";
+import {update} from "../ArrayModifiers";
 
 const getConnectionStatus = ({data, loading, error}) => {
     if (error) {
@@ -39,19 +39,19 @@ const getStatusStyle = ({background}) => {
     return {
         background,
         // position: 'absolute',
-        height: 50,
+        // height: 50,
         // top: index * 50,
-        width: '100%',
-        border: '1px solid black',
+        // width: '100%',
+        // border: '1px solid black',
     }
 };
 
 const ApiStatus = ({"api-name": label, url, saveUrl}) => {
-    const [response, refetch] = useAxios(url + 'status/');
+    const [response, refresh] = useAxios(url + 'status/');
     const status = getConnectionStatus(response);
-    const refresh = async () => {
+    const tryRefresh = async () => {
         try {
-            await refetch();
+            await refresh();
         } catch (e) {
             console.log(e);
         }
@@ -59,99 +59,79 @@ const ApiStatus = ({"api-name": label, url, saveUrl}) => {
     const kill = async () => {
         try {
             await axios.put(url + 'status/', {shutdown: true});
+            await tryRefresh();
         } catch (e) {
             console.log(e);
         }
-        await refresh();
     };
-    useEffect(refresh, [url]);
-    const { value, setValue } = SaveDelay(url, url, saveUrl, {refetch: refresh, ...response});
+    const save = url => saveUrl({"api-name": label, url});
+    useEffect(tryRefresh, [url]);
+    const { value, setValue } = SaveDelay(url, url, save, {refetch: tryRefresh, ...response});
     return (
         <>
-            <div style={getStatusStyle(status)}>
-                <label style={{position: 'absolute', left: '0%', width: '18%'}}>{label}</label>
-                <input
-                    value={value}
-                    onChange={({target: {value}}) => setValue(value)}
-                    style={{position: 'absolute', left: '18%', width: '20%'}}/>
-                <label style={{position: 'absolute', left: '40%', width: '20%'}}>{status.label}</label>
-                <label style={{position: 'absolute', left: '60%', width: '20%'}}>{status.uptime}</label>
-                <div style={{position: 'absolute', left: '80%', width: '20%'}}>
-                    <button onClick={refresh}>Refresh</button>
-                    <button onClick={kill}>Kill</button>
-                </div>
-            </div>
-            <br/>
+            <label style={{background: status.background}}>{label}</label>
+            <input
+                value={value}
+                onChange={({target: {value}}) => setValue(value)}
+            />
+            <label>{status.label}</label>
+            <label>{status.uptime}</label>
+            <button onClick={refresh}>Refresh</button>
+            <button onClick={kill}>Kill</button>
         </>
     );
 };
 
 
 
-const ApiStatuses = ({configUrl, setConfigUrl}) => {
+const ApiStatuses = ({configState: {configUrl, setConfigUrl, config, refreshConfig}}) => {
     const [editorUrl, setEditorUrl] = useState(configUrl);
-    const [networkData, setNetworkData] = useState({data: {}, success: false});
-
-    useEffect(async () => {
+    const urls = _.get(config, 'urls', []);
+    const saveUrls = async urls => {
         try {
-            setNetworkData({success: false});
-            const {data, status} = await axios.get(configUrl);
-            setNetworkData({data, success: status === 200});
+            const updateResp = await axios.put(configUrl, {config: {urls}});
+            await refreshConfig();
         } catch (e) {
-            console.log('unable to get config');
-        }
-    }, [configUrl]);
-
-    const urls = _.get(networkData, 'data.config.urls', []);
-    const updateUrl = async (replaceIndex, newUrl) => {
-        try {
-            if (networkData.loading || networkData.error) {
-                return;
-            }
-
-            await axios.put(configUrl, {
-                config: {
-                    urls: urls.map((api, index) => ({
-                        "api-name": api["api-name"],
-                        url: index === replaceIndex ? newUrl : api.url
-                    }))
-                }
-            });
-
-            const {data, status} = await axios.get(configUrl);
-            setNetworkData({data, success: status === 200});
-        } catch (e) {
-            console.log('unable to update url');
+            console.error(e);
         }
     };
-
+    const saveUrl = update(saveUrls, urls);
     return (
         <>
-            <StringSetting
-                label="Configuration URL"
-                value={editorUrl}
-                setValue={newUrl => setEditorUrl(newUrl)}
-            />
-            <br/>
-            <div style={CONTROLLER_STYLE_2}>
-                <button onClick={async() => {
-                    setConfigUrl(editorUrl);
-                    setConfigUrl(editorUrl);
-                }}>
-                    Refresh Urls
-                </button>
+            <div style={{
+                ...BorderedStyle,
+                display: 'grid',
+                gridGap: 5,
+                gridTemplateColumns: 'auto auto auto',
+            }}>
+                <StringSetting
+                    label="Configuration URL"
+                    value={editorUrl}
+                    setValue={newUrl => setEditorUrl(newUrl)}
+                />
+                <div>
+                    <button onClick={() => {
+                        setConfigUrl(editorUrl);
+                    }}>
+                        Refresh Urls
+                    </button>
+                </div>
             </div>
             <br/>
-            <br/>
-            {
-                urls.map((props, index) => (
+            <div style={{
+                ...BorderedStyle,
+                display: 'grid',
+                gridGap: 5,
+                gridTemplateColumns: 'auto auto auto auto auto auto',
+            }}>
+                {urls.map((props, index) => (
                     <ApiStatus
                         key={`api-${index}`}
-                        saveUrl={newUrl => updateUrl(index, newUrl)}
+                        saveUrl={saveUrl(index)}
                         {...props}
                     />
-                ))
-            }
+                ))}
+            </div>
         </>
     )
 };

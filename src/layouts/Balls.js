@@ -3,8 +3,8 @@ import _ from "lodash";
 import React from "react";
 import SaveDelay from "../SaveDelay";
 import axios from "axios";
-import {MaybeNumber, NumberSetting, OptionSetting, PointSetting} from "../Common";
-import {update, remove, add, insert} from './ArrayModifiers';
+import {NumberSetting, OptionSetting, PointSetting} from "../Common";
+import {update, remove, add} from '../ArrayModifiers';
 
 const Ball = ({ball, removeBall, updateBall}) => {
     const existing = _.cloneDeep(ball);

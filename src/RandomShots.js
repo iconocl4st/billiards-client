@@ -1,14 +1,12 @@
 import React, {useState} from 'react';
-import {CONTROLLER_STYLE, CONTROLLER_STYLE_2, LABEL_STYLE} from "./styles";
+import {BorderedStyle} from "./styles";
 import {DEFAULT_GRID_STATE, GridControlUi} from "./GridControl";
 import {BoolSetting, MaybeNumber, NumberSetting, OptionSetting} from "./Common";
 import {generateShot} from "./generate_shot";
 import GraphicsView from "./GraphicsView";
-import useAxios from "axios-hooks";
 
 
-const RandomShots = ({configUrl}) => {
-    const [configData] = useAxios(configUrl);
+const RandomShots = ({configState}) => {
     const [gridState, setGridState] = useState(DEFAULT_GRID_STATE);
     const [distribution, setDistribution] = useState('uniform');
     const [cueOnRail, setCueOnRail] = useState(false);
@@ -22,22 +20,23 @@ const RandomShots = ({configUrl}) => {
     const [destinationSpeed, setDestinationSpeed] = useState(1);
     const [statusMessage, setStatusMessage] = useState('no message');
     const [shotStepsType, setShotStepsType] = useState('strike');
+    const [drawLines, setDrawLines] = useState(true);
 
     const [graphics, setGraphics] = useState([]);
 
     const generate = () => generateShot(
         { distribution, minCut, destination, destinationRadius, destinationSpin,
-        gridState, useSeed, seed, cueOnRail, objOnRail, shotStepsType},
-        message => {
-            console.log('message', message);
-            setStatusMessage(message);
-        },
+        gridState, useSeed, seed, cueOnRail, objOnRail, shotStepsType, drawLines},
+        setStatusMessage,
         setGraphics,
-        configData
+        configState
     );
     return (
-        <>
-            <br/>
+        <div style={{
+            ...BorderedStyle,
+            display: 'grid',
+            gridTemplateColumns: '33% 33% 33%',
+        }}>
             <MaybeNumber
                 label="Seed"
                 use={useSeed}
@@ -56,7 +55,7 @@ const RandomShots = ({configUrl}) => {
                 <option value="kick">Kick</option>
                 <option value="combo">Combo</option>
                 <option value="kiss">Kiss</option>
-            </OptionSetting>
+            </OptionSetting><div/>
             <OptionSetting
                 label="Distribution"
                 value={distribution}
@@ -64,9 +63,9 @@ const RandomShots = ({configUrl}) => {
             >
                 <option value="uniform">Uniform</option>
                 <option value="spot">Spot shot</option>
-            </OptionSetting>
+            </OptionSetting><div/>
             <GridControlUi
-                style={{}}
+                width={3}
                 disabled={distribution !== 'spot'}
                 gridState={gridState}
                 setGridState={setGridState}
@@ -76,13 +75,13 @@ const RandomShots = ({configUrl}) => {
                 value={cueOnRail}
                 setValue={setCueOnRail}
                 disabled={distribution !== 'spot'}
-            />
+            /><div/>
             <BoolSetting
                 label="Allow object ball on rail"
                 value={objOnRail}
                 setValue={setObjOnRail}
                 disabled={distribution !== 'spot'}
-            />
+            /><div/>
             <NumberSetting
                 label="Cut Threshold"
                 value={minCut}
@@ -90,12 +89,12 @@ const RandomShots = ({configUrl}) => {
                 min={0}
                 step={0.01}
                 max={1}
-            />
+            /><div/>
             <BoolSetting
                 label="Generate Destination"
                 value={destination}
                 setValue={setDestination}
-            />
+            /><div/>
             <NumberSetting
                 label="Destination Radius"
                 value={destinationRadius}
@@ -103,14 +102,14 @@ const RandomShots = ({configUrl}) => {
                 min={0}
                 set={0.5}
                 disabled={!destination}
-            />
+            /><div/>
             <NumberSetting
                 label="Destination Max Spin"
                 value={destinationSpin}
                 setValue={setDestinationSpin}
                 step={0.1}
                 disabled={!destination}
-            />
+            /><div/>
             <NumberSetting
                 label="Destination Max Speed"
                 value={destinationSpeed}
@@ -118,22 +117,19 @@ const RandomShots = ({configUrl}) => {
                 min={0}
                 step={0.1}
                 disabled={!destination}
-            />
-            <div style={LABEL_STYLE}>
-                <label>Status:</label>
-            </div>
-            <div style={CONTROLLER_STYLE}>
-                <label>{statusMessage}</label>
-            </div>
-            <div style={CONTROLLER_STYLE_2}>
+            /><div/>
+            <BoolSetting
+                label="Draw shot lines"
+                value={!!drawLines}
+                setValue={setDrawLines}
+            /><div/>
+            <label>Status:</label>
+            <label>{statusMessage}</label>
+            <div>
                 <button onClick={generate}>Generate!</button>
             </div>
-            <br/>
-
             <GraphicsView graphics={graphics}/>
-            <br/>
-            <br/>
-        </>
+        </div>
     )
 };
 

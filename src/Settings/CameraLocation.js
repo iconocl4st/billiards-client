@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
+import {BorderedStyle} from "../styles";
 
 const Camera = () => {
     return (
-        <div>
+        <div style={{
+            ...BorderedStyle
+        }}>
             <label>Table detection mechanism</label>
             <select>
                 <option value="static">Set rectangle</option>

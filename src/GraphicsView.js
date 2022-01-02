@@ -1,5 +1,6 @@
 
 import React, { useRef, useEffect } from 'react'
+import _ from 'lodash';
 
 const SCALE = 10;
 
@@ -75,9 +76,14 @@ const draw = (ctx, graphics) => {
 	// ctx.fill();
 };
 
-const GraphicsView = ({graphics, ...props}) => {
+const GraphicsView = ({graphics, dims, ...props}) => {
 	const canvasRef = useRef(null);
-	console.log(graphics);
+	// console.log('current graphics set to ', graphics);
+
+	const cw = _.get(dims, 'canvas.width', 400);
+	const ch = _.get(dims, 'canvas.height', 200);
+	const tw = _.get(dims, 'table.width', 92);
+	const th = _.get(dims, 'table.height', 46);
 
 	useEffect(() => {
 		const canvas = canvasRef.current
@@ -85,15 +91,12 @@ const GraphicsView = ({graphics, ...props}) => {
 
 		//Our draw come here
 		draw(context, graphics || [])
-	}, [draw, graphics])
+	}, [graphics])
 
 	return <canvas
-		style={{
-			width: 400,
-			height: 200,
-		}}
-		width={SCALE * 92}
-		height={SCALE * 46}
+		style={{width: cw, height: ch}}
+		width={SCALE * tw}
+		height={SCALE * th}
 		ref={canvasRef}
 		{...props}
 	/>

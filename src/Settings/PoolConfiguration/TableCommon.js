@@ -19,14 +19,14 @@ const emptyPocket = (_, number) => ({
 });
 
 export const createPutData = config => ({
-    table: {
-        dimensions: _.get(config, 'table.dimensions', {}),
-        balls: _.get(config, 'table.balls', range(15).map(emptyBall)).map(({
+    'pool-config': {
+        dimensions: _.get(config, 'pool-config.dimensions', {}),
+        balls: _.get(config, 'pool-config.balls', range(15).map(emptyBall)).map(({
             name, number, radius, type, color: {r, g, b, a}
         }) => ({
             name, number, radius, type, color: {r, g, b, a}
         })),
-        pockets: _.get(config, 'table.pockets', range(6).map(emptyPocket)).map(pocket => ({
+        pockets: _.get(config, 'pool-config.pockets', range(6).map(emptyPocket)).map(pocket => ({
             'inner-segment-1': pocket['inner-segment-1'],
             'outer-segment-1': pocket['outer-segment-1'],
             'outer-segment-2': pocket['outer-segment-2']

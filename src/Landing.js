@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { useState, useEffect } from 'react';
 
 import ComponentTree from './ComponentTree';
 
@@ -11,11 +10,13 @@ import Drills from './Drills';
 import Layouts from "./Layouts";
 import CheckerBoard from "./Settings/CheckerBoard";
 import Camera from "./Settings/CameraLocation";
-import Projector from "./Settings/Projector";
+import TableDimensions from "./Settings/PoolConfiguration/TableDimensions";
 import ApiStatus from "./Settings/ApiStatuses";
-import TableDims from "./Settings/Table/TableDims";
-import Pockets from "./Settings/Table/Pockets";
-import Balls from "./Settings/Table/Balls";
+import ProjectorMapping from "./Settings/ProjectorMapping";
+import Pockets from "./Settings/PoolConfiguration/Pockets";
+import Balls from "./Settings/PoolConfiguration/Balls";
+import RandomLocations from "./RandomLocations";
+import RandomShots2 from "./RandomShots/RandomShots2";
 
 
 const tree = {
@@ -29,9 +30,21 @@ const tree = {
         type: 'branch',
         label: 'Practice',
         children: [{
-            type: 'leaf',
-            label: 'Random shots',
-            component: RandomShots
+            type: 'branch',
+            label: 'Random',
+            children: [{
+                type: 'leaf',
+                label: 'Random shots',
+                component: RandomShots
+            }, {
+                type: 'leaf',
+                label: 'Random shots 2',
+                component: RandomShots2
+            }, {
+                type: 'leaf',
+                label: 'Random Locations',
+                component: RandomLocations
+            }]
         }, {
             type: 'leaf',
             label: 'Layouts',
@@ -53,20 +66,8 @@ const tree = {
             label: 'Api Statuses',
             component: ApiStatus
         }, {
-            type: 'leaf',
-            label: 'Projector location',
-            component: Projector
-        }, {
-            type: 'leaf',
-            label: 'Camera location',
-            component: Camera
-        }, {
-            type: 'leaf',
-            label: 'Checkerboard',
-            component: CheckerBoard
-        }, {
             type: 'branch',
-            label: 'Table',
+            label: 'Pool Settings',
             children: [{
                 type: 'leaf',
                 label: 'Balls',
@@ -77,9 +78,21 @@ const tree = {
                 component: Pockets
             }, {
                 type: 'leaf',
-                label: 'Dimensions',
-                component: TableDims
+                label: 'Table dimensions',
+                component: TableDimensions
             }]
+        }, {
+            type: 'leaf',
+            label: 'Projector settings',
+            component: ProjectorMapping
+        }, {
+            type: 'leaf',
+            label: 'Camera location',
+            component: Camera
+        }, {
+            type: 'leaf',
+            label: 'Checkerboard',
+            component: CheckerBoard
         },]
     }]
 };

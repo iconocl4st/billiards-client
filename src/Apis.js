@@ -1,21 +1,22 @@
 
+/*
 import axios from "axios";
 import _ from 'lodash';
 
 
-export const getApiUrl = (apiName, config) => {
-    if (!config) {
-        return 'none';
-    }
-    for (const api of _.get(config, 'data.config.urls', [])) {
-        if (api['api-name'] === apiName) {
-            return api.url;
-        }
-    }
-    return 'none';
-};
 
-/*
+// export const getApiUrl = (apiName, config) => {
+//     if (!config) {
+//         return 'none';
+//     }
+//     for (const api of _.get(config, 'data.config.urls', [])) {
+//         if (api['api-name'] === apiName) {
+//             return api.url;
+//         }
+//     }
+//     return 'none';
+// };
+
 
 const DEFAULT_HOST = 'localhost';
 // const BASE_URL = '10.0.0.160';

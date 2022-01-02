@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import _ from 'lodash';
 import {CONTROLLER_STYLE} from "../styles";
 import {FormattedDate} from "../Common";

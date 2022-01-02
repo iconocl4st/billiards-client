@@ -1,16 +1,49 @@
 import React, {useState} from 'react';
-import {NAVIGATION_STYLE, compGridStyle, COLORS_ARRAY, CONTENT_STYLE} from "./styles";
+import {Colors} from "./styles";
 
-const NAV_ITEM_WIDTH = 20;
+// const NUM_CONTENT_COLS = 3;
 
-const NAV_ITEM_STYLE = {
+const NAVIGATION_STYLE = {
     position: 'absolute',
+    width: '98%',
+    left: '1%',
+    top: 10,
+    display: 'grid',
+    gridGap: 5,
+    gridTemplateColumns: '20% 20% 20% 20% 20%',
+    background: Colors.contentItems,
+};
+
+const NAVIGATION_ITEM_STYLE = {
     display: 'grid',
     placeItems: 'center',
-    backgroundColor: COLORS_ARRAY[4],
-    color: COLORS_ARRAY[1],
-    width: (NAV_ITEM_WIDTH - 1) + '%',
-    border: '1px solid white'
+    backgroundColor: Colors.navItems,
+    color: Colors.textColor,
+    border: '1px solid ' + Colors.textColor
+};
+
+const CONTENT_STYLE = {
+    position: 'absolute',
+    width: '98%',
+    left: '1%',
+    top: 70,
+}
+
+const BRANCH_STYLE = {
+    ...CONTENT_STYLE,
+    display: 'grid',
+    gridGap: 5,
+    gridTemplateColumns: '33% 33% 33%',
+};
+
+const BRANCH_ITEM_STYLE = {
+        display: 'grid',
+        placeItems: 'center',
+        backgroundColor: Colors.navItems,
+        color: Colors.textColor,
+        border: '1px solid ' + Colors.textColor,
+        height: 100,
+        // ...getGridIndex(idx, NUM_CONTENT_COLS)
 };
 
 const NavigationBar = ({setPath, previous, current}) => (
@@ -19,19 +52,13 @@ const NavigationBar = ({setPath, previous, current}) => (
             ({label, location}, index) => (
                 <div key={`${label}-${index}`}
                      onClick={() => setPath(location)}
-                     style={{
-                         ...NAV_ITEM_STYLE,
-                         left: (index * NAV_ITEM_WIDTH) + '%',
-                     }}
+                     style={NAVIGATION_ITEM_STYLE}
                 >
                     <label>{label}</label>
                 </div>
             )
         )}
-        <div style={{
-            ...NAV_ITEM_STYLE,
-            left: (NAV_ITEM_WIDTH * previous.length) + '%'
-        }}>
+        <div style={NAVIGATION_ITEM_STYLE}>
             <label>{current}</label>
         </div>
     </div>
@@ -66,10 +93,14 @@ const parseBranch = (setPath, {type, label, ...node}, path, navigation, index, p
     return () => (
         <>
             <NavigationBar previous={navigation} current={label} setPath={setPath}/>
-            <div style={CONTENT_STYLE}>
+            <div style={BRANCH_STYLE}>
                 {node.children.map(
                     ({label}, index) => (
-                        <div key={label} style={compGridStyle(index)} onClick={() => setPath([...path, index])}>
+                        <div
+                            key={label}
+                            style={BRANCH_ITEM_STYLE}
+                            onClick={() => setPath([...path, index])}
+                        >
                             <label>{label}</label>
                         </div>
                     )

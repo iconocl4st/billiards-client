@@ -1,26 +1,25 @@
 import React, {useState} from "react";
-import {LABEL_STYLE, CONTROLLER_STYLE} from "./styles";
+import {BorderedStyle} from "./styles";
 
-export const GridControlUi = ({disabled, style, gridState, setGridState}) => {
+
+export const GridControlUi = ({disabled, gridState, setGridState, width}) => {
     const updateNumRows = ({target: {value}}) => setGridState({...gridState, numRows: Number(value)});
     const updateNumCols = ({target: {value}}) => setGridState({...gridState, numCols: Number(value)});
     const updateShowGrid = ({target: {checked: showGrid}}) => setGridState({...gridState, showGrid});
     const {numRows, numCols, showGrid} = gridState;
     return (
-        <div style={style}>
-            <div style={LABEL_STYLE}><label>Show grid:</label></div>
-            <div style={CONTROLLER_STYLE}>
+        <>
+            <label>Show grid:</label>
+            <div>
                 <input
                     type="checkbox"
                     disabled={disabled}
                     checked={showGrid}
                     onChange={updateShowGrid}/>
             </div>
-            <br/>
-            <div style={LABEL_STYLE}>
-                <label>Number of Rows:</label>
-            </div>
-            <div style={CONTROLLER_STYLE}>
+            {width === 3 && <div/>}
+            <label>Number of Rows:</label>
+            <div>
                 <input
                     disabled={disabled || !showGrid}
                     value={numRows}
@@ -28,11 +27,9 @@ export const GridControlUi = ({disabled, style, gridState, setGridState}) => {
                     min={1}
                     type="number"/>
             </div>
-            <br/>
-            <div style={LABEL_STYLE}>
-                <label>Number of Columns:</label>
-            </div>
-            <div style={CONTROLLER_STYLE}>
+            {width === 3 && <div/>}
+            <label>Number of Columns:</label>
+            <div>
                 <input
                     disabled={disabled || !showGrid}
                     value={numCols}
@@ -40,8 +37,8 @@ export const GridControlUi = ({disabled, style, gridState, setGridState}) => {
                     min={1}
                     type="number"/>
             </div>
-            <br/>
-        </div>
+            {width === 3 && <div/>}
+        </>
     );
 };
 
@@ -51,13 +48,21 @@ export const DEFAULT_GRID_STATE = {
     numCols: 7
 };
 
-export const GridControl = ({disabled, style}) => {
+export default ({disabled}) => {
     const [gridState, setGridState] = useState(DEFAULT_GRID_STATE);
-    return <GridControlUi
-        disabled={disabled}
-        style={style}
-        gridState={gridState}
-        setGridState={setGridState}/>;
+    return (
+        <div style={{
+            ...BorderedStyle,
+            display: 'grid',
+            gridGap: '2px',
+            gridTemplateColumns: '25% auto',
+        }}>
+        <GridControlUi
+            gridState={gridState}
+            setGridState={setGridState}
+            disabled={!!disabled}
+            width={2}
+        />
+    </div>)
 };
 
-export default GridControl;

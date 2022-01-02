@@ -1,5 +1,32 @@
 
 
+export const Colors = {
+    background: 'rgb(8, 21, 26)',
+    navItems: 'rgb(6, 55, 55)',
+    contentItems: 'rgb(85,82,85)',
+    a: 'rgb(168, 32, 26)',
+    textColor: 'rgb(255, 255, 189)',
+};
+
+
+
+export const CompStyle = {
+    background: Colors.navItems,
+    color: Colors.textColor,
+    padding: '2px',
+};
+
+export const BorderedStyle = {
+    ...CompStyle,
+    border: '1px solid ' + Colors.textColor,
+    marginBottom: '10px',
+};
+
+
+
+
+
+
 export const COLORS_ARRAY = [
     'rgb(51, 92, 67)',
     'rgb(255, 243, 176)',
@@ -8,16 +35,26 @@ export const COLORS_ARRAY = [
     'rgb(84, 11, 14)',
 ];
 
+
+const getIndices = (index, ncols) => ({
+    row: (index - index % ncols) / ncols,
+    col: index % ncols
+});
+
+export const getGridIndex = (index, numCols) => {
+    const {row, col} = getIndices(index, numCols);
+    return {
+        gridColumnStart: col,
+        gridColumnEnd: col + 1,
+        gridRowStart: row,
+        gridRowEnd: row + 1,
+    };
+};
+
 const NAVIGATION_HEIGHT = 30;
+
 const COMPONENT_HEIGHT = 100;
 
-export const NAVIGATION_STYLE = {
-    position: 'absolute',
-    width: '96%',
-    height: NAVIGATION_HEIGHT,
-    left: '2%',
-    top: 10,
-};
 export const CONTENT_STYLE = {
     position: 'absolute',
     width: '96%',

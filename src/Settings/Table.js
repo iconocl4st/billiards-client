@@ -10,7 +10,7 @@
 //
 // // {position: 'absolute', left: '0%', width: '100%'}
 // // style={{position: 'absolute', top: SINGLE_COMP_STYLE.top, height: 'auto', width: '100%'}}
-// const Table = () => {
+// const PoolConfiguration = () => {
 // 	const [{data, loading, error}, refetch] = useAxios(URLS.config);
 // 	const putData = createPutData(_.get(data, 'config', {}));
 // 	const sendPutData = async () => {
@@ -37,4 +37,4 @@
 // 	);
 // };
 //
-// export default Table;
+// export default PoolConfiguration;

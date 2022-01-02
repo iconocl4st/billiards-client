@@ -19,38 +19,35 @@ const hexToColor = s => ({
 	a: parseInt(s.substring(7, 9), 16),
 });
 
-export const ColorSelector = ({color, set, style, showStyle}) => {
+export const ColorSelector = ({color, setColor}) => {
 	const [open, setOpen] = useState(false);
 	if (!open) {
+		console.log('color', color);
 		return (
-			<div style={{display: 'block', placeItems: 'center', ...style}}>
-				<button
-					style={{position: 'absolute', width: '50%'}}
-					onClick={() => setOpen(true)}
-				>
+			<div style={{
+				width: '100%',
+				height: '100%',
+				display: 'grid',
+				gridTemplateColumns: '50% 50%',
+			}}>
+				<button onClick={() => setOpen(true)}>
 					Color...
 				</button>
 				<div style={{
-					position: 'absolute',
-					left: '50%',
-					width: '50%',
-					height: style.height,
-					border: '1px solid white',
-					backgroundColor: colorToHex(color)}} />
+					backgroundColor: colorToHex(color),
+					width: '100%',
+					height: '100%'
+				}} />
 			</div>
 		);
 	}
 	return (
-		<div style={style}>
+		<div>
 			<button onClick={() => setOpen(false)}>Done</button>
 			<ColorChooser
-				style={{
-					position: 'absolute',
-					zIndex: -5
-				}}
 				alpha
 				color={colorToHex(color)}
-				onChange={h => set(hexToColor(h))}
+				onChange={h => setColor(hexToColor(h))}
 			/>
 		</div>
 	);
@@ -58,10 +55,8 @@ export const ColorSelector = ({color, set, style, showStyle}) => {
 
 export const NumberSetting = ({label, value, setValue, ...rest}) => (
     <>
-        <div style={LABEL_STYLE}>
-            <label>{label}:</label>
-        </div>
-        <div style={CONTROLLER_STYLE}>
+		<label>{label}:</label>
+        <div>
             <input
                 type="number"
                 value={value}
@@ -69,7 +64,6 @@ export const NumberSetting = ({label, value, setValue, ...rest}) => (
                 {...rest}
             />
         </div>
-        <br/>
     </>
 );
 
@@ -90,10 +84,7 @@ export const Point = ({label, point, step, set}) => (
 
 const DefaultedPointSetting = ({label, value: {x, y}, setValue, ...rest}) => (
 	<>
-		<div style={LABEL_STYLE}>
 			<label>{label}:</label>
-		</div>
-		<div style={CONTROLLER_STYLE}>
 			<label>x:</label>
 			<input
 				type="number"
@@ -101,8 +92,6 @@ const DefaultedPointSetting = ({label, value: {x, y}, setValue, ...rest}) => (
 				onChange={({target: {value}}) => setValue({y, x: Number(value)})}
 				{...rest}
 			/>
-		</div>
-		<div style={CONTROLLER_STYLE_2}>
 			<label>y:</label>
 			<input
 				type="number"
@@ -110,8 +99,6 @@ const DefaultedPointSetting = ({label, value: {x, y}, setValue, ...rest}) => (
 				onChange={({target: {value}}) => setValue({x, y: Number(value)})}
 				{...rest}
 			/>
-		</div>
-		<br/>
 	</>
 );
 
@@ -128,64 +115,52 @@ export const PointSetting = ({label, step, value, setValue, ...rest}) => (
 
 export const BoolSetting = ({label, value, setValue, ...rest}) => (
 	<>
-		<div style={LABEL_STYLE}>
-			<label>{label}:</label>
-		</div>
-		<div style={CONTROLLER_STYLE}>
+		<label>{label}:</label>
+		<div>
 			<input
 				type="checkbox"
-				value={value}
+				checked={value}
 				onChange={({target: {checked}}) => setValue(checked)}
 				{...rest}
 			/>
 		</div>
-		<br/>
 	</>
 );
 
 export const OptionSetting = ({label, value, setValue, children}) => (
 	<>
-		<div style={LABEL_STYLE}>
-			<label>{label}:</label>
-		</div>
-		<div style={CONTROLLER_STYLE}>
+		<label>{label}:</label>
+		<div>
 			<select value={value} onChange={({target: {value}}) => setValue(value)}>
 				{children}
 			</select>
 		</div>
-		<br/>
 	</>
 );
 
 export const StringSetting = ({label, value, setValue, ...rest}) => (
 	<>
-		<div style={LABEL_STYLE}>
-			<label>{label}:</label>
-		</div>
-		<div style={WIDE_CONTROLLER_STYLE}>
-			<input
-				type="text"
-				value={value}
-				onChange={({target: {value}}) => setValue(value)}
-				{...rest}
-			/>
-		</div>
+		<label>{label}:</label>
+		<input
+			type="text"
+			value={value}
+			onChange={({target: {value}}) => setValue(value)}
+			{...rest}
+		/>
 	</>
 )
 
 
 export const MaybeNumber = ({label, use, setUse, value, setValue, ...rest}) => (
 	<>
-		<div style={LABEL_STYLE}>
-			<label>{label}:</label>
-		</div>
-		<div style={CONTROLLER_STYLE}>
+		<label>{label}:</label>
+		<div>
 			<input
 				type="checkbox"
 				checked={use}
 				onChange={({target: {checked}}) => setUse(checked)}/>
 		</div>
-		<div style={CONTROLLER_STYLE_2}>
+		<div>
 			<input
 				disabled={!use}
 				value={value}
@@ -194,7 +169,6 @@ export const MaybeNumber = ({label, use, setUse, value, setValue, ...rest}) => (
 				{...rest}
 			/>
 		</div>
-		<br/>
 	</>
 );
 

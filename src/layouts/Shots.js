@@ -2,7 +2,7 @@ import {CONTROLLER_STYLE, CONTROLLER_STYLE_2, LABEL_STYLE} from "../styles";
 import _ from "lodash";
 import axios from "axios";
 import React from "react";
-import {update, remove, add, insert} from './ArrayModifiers';
+import {update, remove, add, insert} from '../ArrayModifiers';
 
 const StepTypeParam = {
     cue: {

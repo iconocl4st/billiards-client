@@ -1,27 +1,31 @@
 import { useState } from 'react';
 
 
-// Rename to lower
-const SaveDelay = (
-	defaultValue, data, networkSave, {loading, error, refetch}
-) => {
+// The heck is this thing, why does it have to be capitol?
+const SaveDelay = (data, networkSave, refresh) => {
 	const AutoSaveDelay = 1000;
 	const [delayState, setDelayState] = useState({
-		internalState: defaultValue,
+		internalState: data,
 		hasModifications: false,
-		hasTimeOut: false
+		hasTimeOut: false,
 	});
 	const {internalState, hasTimeOut, hasModifications, timeOutVar} = delayState;
-	const value = (hasModifications || loading || error) ? internalState : data;
+	const value = hasModifications ? internalState : data;
 
 	const save = async newValue => {
+		console.log('about to call network save');
 		setDelayState({
 			internalState: newValue,
 			hasModifications: false,
 			hasTimeOut: false,
 		});
 		await networkSave(newValue);
-		await refetch();
+		await refresh();
+		setDelayState({
+			internalState: newValue,
+			hasModifications: false,
+			hasTimeOut: false,
+		});
 	};
 	const setValue = newValue => {
 		if (hasTimeOut) {

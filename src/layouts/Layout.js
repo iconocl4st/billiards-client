@@ -2,18 +2,18 @@ import React, { useState } from 'react';
 import useAxios from 'axios-hooks'
 import axios from 'axios';
 import {CONTROLLER_STYLE, CONTROLLER_STYLE_2, LABEL_STYLE} from "../styles";
-import {FormattedDate, NumberSetting, PointSetting, StringSetting} from "../Common";
+import {FormattedDate, NumberSetting, StringSetting} from "../Common";
 import Balls from "./Balls";
 import Shots from "./Shots";
 import Graphics from "./Graphics";
-import {getApiUrl} from "../Apis";
 import _ from 'lodash';
 import SaveDelay from "../SaveDelay";
 import {getLayoutGraphics} from "./getLayoutGraphics";
 import GraphicsView from "../GraphicsView";
 
 
-const LayoutInfo = ({layout, configUrl, layoutsApi, setView, back, network}) => {
+const LayoutInfo = ({layout, configState, remove, setView, back, network}) => {
+    const layoutsUrl = _.get(configState, 'apiUrls.layoutsUrl', 'none');
     const uuid = _.get(layout, 'info.uuid', 'no uuid found');
     const creationTime = _.get(layout, 'info.creation-time', 0);
     const modificationTime = _.get(layout, 'info.modification-time', 0);
@@ -23,7 +23,7 @@ const LayoutInfo = ({layout, configUrl, layoutsApi, setView, back, network}) => 
 
     const updatePreview = async () => {
         try {
-            const graphics = await getLayoutGraphics({configUrl, logger, uuid});
+            const graphics = await getLayoutGraphics(configState, logger, uuid);
             setPreviewGraphics(graphics);
         } catch (e) {
             console.error("Unable to preview graphics");
@@ -32,7 +32,7 @@ const LayoutInfo = ({layout, configUrl, layoutsApi, setView, back, network}) => 
     }
 
     const save = async updates => {
-        const resp = await axios.put(layoutsApi + 'layout/' + uuid, {updates});
+        const resp = await axios.put(layoutsUrl + 'layout/' + uuid, {updates});
         console.log("Update response", resp);
     };
     const {value: nameValue, setValue: setNameValue} = SaveDelay(
@@ -64,6 +64,9 @@ const LayoutInfo = ({layout, configUrl, layoutsApi, setView, back, network}) => 
             <br/>
             <div style={LABEL_STYLE}>Last modified</div>
             <div style={CONTROLLER_STYLE}><FormattedDate unixTime={modificationTime * 1000}/></div>
+            <br/>
+            <div style={LABEL_STYLE}>Actions</div>
+            <div style={CONTROLLER_STYLE}><button onClick={remove}>Remove</button></div>
             <br/>
             <StringSetting label="Name" value={nameValue} setValue={setNameValue}/>
             <br/>
@@ -97,30 +100,32 @@ const LayoutInfo = ({layout, configUrl, layoutsApi, setView, back, network}) => 
 };
 
 
-const Layout  = ({uuid, configUrl, layoutsApi, back, remove, ...props}) => {
+const Layout  = ({uuid, back, remove, configState}) => {
+    const {apiUrls} = configState;
+    const {layoutsUrl} = apiUrls;
     const [view, setView] = useState('info');
-    const [{data, loading, error}, refetch] = useAxios(layoutsApi + "layout/" + uuid);
+    const [{data, loading, error}, refresh] = useAxios(layoutsUrl + "layout/" + uuid);
 
     const layout = _.get(data, 'layout', {});
     console.log('the layout', layout);
 
     const subBack = () => setView('info');
-    const network = {loading, error, refetch};
+    const network = {loading, error, refresh};
     return {
         'info': <LayoutInfo
-            layoutsApi={layoutsApi} layout={layout} network={network}
-            setView={setView} back={back} configUrl={configUrl}
+            layoutsApi={layoutsUrl} layout={layout} network={network}
+            setView={setView} back={back} configState={configState} remove={remove}
         />,
         'balls': <Balls
-            layoutsApi={layoutsApi} layout={layout} network={network}
+            layoutsApi={layoutsUrl} layout={layout} network={network}
             back={subBack}
         />,
         'shots': <Shots
-            layoutsApi={layoutsApi} layout={layout} network={network}
+            layoutsApi={layoutsUrl} layout={layout} network={network}
             back={subBack}
         />,
         'graphics': <Graphics
-            layoutsApi={layoutsApi} layout={layout} network={network}
+            layoutsApi={layoutsUrl} layout={layout} network={network}
             back={subBack}
         />,
     }[view];

@@ -5,54 +5,47 @@ import LayoutList from "./LayoutList";
 
 import useAxios from 'axios-hooks'
 import axios from 'axios';
-import {getApiUrl} from "../Apis";
 
+const creator = (layoutsUrl, refresh) => async () => {
+	const ret = await axios.post(layoutsUrl + 'layouts/', {});
+	console.log('created: ', ret);
+	await refresh();
+};
 
-const LAYOUTS = [{
-	name: "some scene",
-	created: 1040924,
-	last_modified: 320953,
-	uuid: "skdjflksdjflj",
-	layout: {},
-	shots: [],
-	graphics: []
-}];
+const copier = (layoutsUrl, refresh) => async uuid => {
+	const {data: {layout: {entry: input}, success}, status} = await axios.get(layoutsUrl + 'layout/' + uuid);
+	if (status !== 200 || !success) {
+		console.log('Unable to get current layout...');
+		return;
+	}
+	const ret = await axios.post(layoutsUrl + 'layouts/', {input});
+	console.log('created: ', ret); // TODO
+	await refresh();
+};
 
+const remover = (layoutsUrl, refresh) => async uuid => {
+	const ret = await axios.delete(layoutsUrl + 'layout/' + uuid);
+	console.log('removed: ', ret);
+	await refresh();
+};
 
-const Design = ({layoutsApi, configUrl}) => {
-	const [{data, loading, error}, refetch] = useAxios(layoutsApi + "layouts/")
+const Design = ({configState}) => {
+	const {apiUrls} = configState;
+	const {layoutsUrl} = apiUrls;
+	const [{data, loading, error}, refresh] = useAxios(layoutsUrl + "layouts/")
 	const layouts = _.get(data, 'layouts', []);
     const [editingState, setEditingState] = useState({editing: false});
-	const create = async () => {
-		const ret = await axios.post(layoutsApi + 'layouts/', {});
-		console.log('created: ', ret);
-		await refetch();
-	};
-	const copy = async uuid => {
-		const {data: {layout: {entry: input}, success}, status} = await axios.get(layoutsApi + 'layout/' + uuid);
-		if (status !== 200 || !success) {
-			console.log('Unable to get current layout...');
-			return;
-		}
-		const ret = await axios.post(layoutsApi + 'layouts/', {input});
-		console.log('created: ', ret); // TODO
-		await refetch();
-	};
-	const remove = async uuid => {
-		const ret = await axios.delete(layoutsApi + 'layout/' + uuid);
-		console.log('removed: ', ret);
-		await refetch();
-	};
+	const create = creator(layoutsUrl, refresh);
+	const copy = copier(layoutsUrl, refresh);
 	const edit = uuid=>setEditingState({editing: true, uuid});
-
+	const remove = remover(layoutsUrl, refresh);
     if (editingState.editing) {
 		return <Layout
 			uuid={editingState.uuid}
-			layoutsApi={layoutsApi}
-			configUrl={configUrl}
+			configState={configState}
 			back={async () => {
 				setEditingState({editing: false});
-				refetch();
+				refresh();
 			}}
 			remove={() => remove(editingState.uuid)}
 		/>
@@ -66,12 +59,4 @@ const Design = ({layoutsApi, configUrl}) => {
     }
 };
 
-export default ({configUrl}) => {
-	const [configData] = useAxios(configUrl);
-	const layoutsApi = getApiUrl("Layouts", configData);
-	if (layoutsApi === 'none') {
-		return <div>Loading...</div>;
-	}
-	return <Design layoutsApi={layoutsApi} configUrl={configUrl}/>;
-}
-
+export default Design;

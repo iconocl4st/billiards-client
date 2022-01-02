@@ -1,36 +1,40 @@
 import React, {useState} from 'react';
 import GridControl from "./GridControl";
-import {CONTENT_STYLE, LABEL_STYLE, CONTROLLER_STYLE, CONTROLLER_STYLE_2} from "./styles";
+import {Colors, BorderedStyle} from "./styles";
 
-const SnapshotsControl = ({style}) => {
+const SnapshotsControl = () => {
     return (
-        <div style={style}>
+        <div style={{
+            ...BorderedStyle,
+            display: 'grid',
+            gridTemplateColumns: '25% 25%',
+        }}>
             <button>Take snapshot</button>
             <button>Reset to snapshot</button>
         </div>
     );
 };
 
-const TimerControl = ({style}) => {
+const TimerControl = () => {
     const [timed, setTimed] = useState(false);
     const [duration, setDuration] = useState(30);
 
     return (
-        <div style={style}>
-            <div style={LABEL_STYLE}>
-                <label>Enable timer</label>
-            </div>
-            <div style={CONTROLLER_STYLE}>
+        <div style={{
+            ...BorderedStyle,
+            display: 'grid',
+            gridGap: '2px',
+            gridTemplateColumns: '25% auto',
+        }}>
+            <label>Enable timer:</label>
+            <div >
                 <input
                     checked={timed}
                     onChange={({target: {checked}}) => setTimed(checked)}
                     type="checkbox"/>
             </div>
-            <br/>
-            <div style={LABEL_STYLE}>
-                <label>Timer duration (s):</label>
-            </div>
-            <div style={CONTROLLER_STYLE}>
+            <label>Timer duration (s):</label>
+            <div>
                 <input
                     min={1}
                     value={duration}
@@ -38,42 +42,45 @@ const TimerControl = ({style}) => {
                     disabled={!timed}
                     type="number"/>
             </div>
-            <br/>
-            <div style={LABEL_STYLE}>
-                <label>Show timer on table</label>
+            <label>Show timer on table:</label>
+            <div>
+                <input disabled={!timed} type="checkbox"/>
             </div>
-            <div style={CONTROLLER_STYLE}>
-                <input
-                    disabled={!timed}
-                    type="checkbox"/>
+            <div style={{
+                gridColumnStart: 1,
+                gridColumnEnd: 3,
+                display: 'grid',
+                gridTemplateColumns: '33% 33% 33%',
+            }}>
+                <button disabled={!timed}>Start</button>
+                <button disabled={!timed}>Pause</button>
+                <button disabled={!timed}>Reset</button>
             </div>
-            <br/>
-
-            <button disabled={!timed}>Start</button>
-            <button disabled={!timed}>Pause</button>
-            <button disabled={!timed}>Reset</button>
         </div>
     );
 }
 
 const PLAY_STYLE = {
-    ...CONTENT_STYLE,
-    left: 0,
-    position: 'absolute',
-    width: '100%',
-    border: '1px solid white'
+    display: 'grid',
 };
-const h1 = 75;
-const h2 = 105;
-const h3 = 50;
-const buff = 5;
+
+const playItem = gridArea => ({
+    gridArea,
+    background: Colors.navItems
+})
+
+
 const Play = () => {
     return (
-        <>
-            <GridControl style={{...PLAY_STYLE, top: 0, height: h1}}/>
-            <TimerControl style={{...PLAY_STYLE, top: h1 + buff, height: h2}}/>
-            <SnapshotsControl style={{...PLAY_STYLE, top: (h1 + h2 + 2 * buff), height: h3}}/>
-        </>
+        <div style={{
+            // background: Colors.contentItems,
+            display: 'grid',
+            gridRowGap: 10
+        }}>
+            <GridControl style={{gridArea: ' 0 0 1 1'}}/>
+            <TimerControl style={{gridArea: '1 0 2 1'}}/>
+            <SnapshotsControl style={{gridArea: '2 0 3 1'}}/>
+        </div>
     )
 };
 

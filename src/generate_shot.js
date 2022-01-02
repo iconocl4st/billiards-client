@@ -1,7 +1,65 @@
 import axios from 'axios';
-import {getApiUrl} from "./Apis";
 import _ from 'lodash';
 
+
+const respHandler = listener => (resp, msg) => {
+    if (resp.status === 200 && resp.data.success) {
+        listener(resp.data.message);
+        return false;
+    } else {
+        listener(msg);
+        return true;
+    }
+};
+
+const createEmptyLayout = (table, locations) => ({
+    table,
+    layout: {
+        name: "no name",
+        locations,
+        shots: [],
+        graphics: []
+    },
+    infos: [],
+    options: {}
+});
+
+
+export const generateLocations = ({useSeed, seed, numBalls, setGraphics, configState, listener}) => async () => {
+    const table = _.get(configState, 'config.table', {});
+    const dimensions = _.get(configState, 'config.table.dimensions', {});
+    const layoutsUrl = _.get(configState, 'apiUrls.layoutsUrl');
+    const graphicsUrl = _.get(configState, 'apiUrls.graphicsUrl');
+    const projectorUrl = _.get(configState, 'apiUrls.projectorUrl');
+    const isError = respHandler(listener);
+    const params = {
+        dimensions,
+        'ball-radius': 1.13,
+        balls: Array.from(Array(numBalls).keys()).map(
+            idx => ({ type: 'object', number: idx + 1})),
+        ...(useSeed ? {seed}: {})
+    };
+    const locResp = await axios.post(layoutsUrl + 'random/locations/', {params});
+    if (isError(locResp, 'Unable to generate locations')) {
+        return;
+    }
+    const locations = _.get(locResp, 'data.locations', {});
+
+    const graphicsResp = await axios.post(
+        graphicsUrl + 'layout/',
+        {params: createEmptyLayout(table, locations)});
+    if (isError(graphicsResp, 'Unable to generate graphics')) {
+        return;
+    }
+    const graphics = _.get(graphicsResp, 'data.graphics', []);
+    setGraphics(graphics);
+
+    const projResp = await axios.put(projectorUrl + 'graphics/', {graphics});
+    if (isError(projResp, 'Unable to post graphics')) {
+        return;
+    }
+    listener('Success');
+};
 
 const WILD_CARDS = {
     strike: [{
@@ -145,29 +203,26 @@ export const createParams = ({
 //     };
 // }
 
-export const generateShot = async (state, listener, graphics_receiver, configData) => {
-    const table = _.get(configData, 'data.config.table', {});
-    const dimensions = _.get(configData, 'data.config.table.dimensions', {});
-
-    // const {data: {message: cmessage, config, success: csuccess}, status: cstatus} = await axios.get(
-    //     getUrl("Configuration"));
-    // if (!csuccess || cstatus !== 200) {
-    //     listener('Unable to retrieve config');
-    //     return;
-    // }
-    // listener(cmessage);
+export const generateShot = async (state, listener, setGraphics, configState) => {
+    const table = _.get(configState, 'config.table', {});
+    const dimensions = _.get(configState, 'config.table.dimensions', {});
+    const layoutsUrl = _.get(configState, 'apiUrls.layoutsUrl');
+    const shotsUrl = _.get(configState, 'apiUrls.shotsUrl');
+    const graphicsUrl = _.get(configState, 'apiUrls.graphicsUrl');
+    const projectorUrl = _.get(configState, 'apiUrls.projectorUrl');
+    const isError = respHandler(listener);
 
     // TODO: remove the following line
     const params = createParams(state, dimensions);
-    const {data: {message: lmessage, locations, success: lsuccess}, status: lstatus} = await axios.post(
-        getApiUrl("Layouts", configData) + 'random/locations/', {params});
-    if (!lsuccess || lstatus !== 200) {
-        listener('Unable to generate positions');
+
+    const locResp = await axios.post(layoutsUrl + 'random/locations/', {params});
+    if (isError(locResp, 'Unable to generate locations')) {
         return;
     }
-    listener(lmessage);
-    const {data: {message: smessage, shots, success: ssuccess}, status: sstatus} = await axios.post(
-        getApiUrl("Shots", configData) + 'list/', {
+    const locations = _.get(locResp, 'data.locations', {});
+
+    const listResp = await axios.post(
+        shotsUrl + 'list/', {
             params: {
                 table,
                 locations,
@@ -176,61 +231,52 @@ export const generateShot = async (state, listener, graphics_receiver, configDat
                 'step-wild-cards': WILD_CARDS[state.shotStepsType]
             }
         });
-    if (!ssuccess || sstatus !== 200) {
-        listener('Unable to list shots');
+    if (isError(listResp, 'Unable to list shots')) {
         return;
     }
-    listener(smessage);
-    console.log('shots', shots)
-
+    const shots = _.get(listResp, 'data.shots');
     const numShots = shots.length;
     if (numShots <= 0) {
         listener('no shots found');
         return;
     }
+
     // Should use the same seed...
     // only side or only corner...
     const shot = shots[Math.floor(Math.random() * numShots)];
-    const {data: {message: imessage, 'shot-info': shotInfo, success: isuccess}, status: istatus} = await axios.post(
-        getApiUrl("Shots", configData) + 'info/', {
+    const shotInfoResp = await axios.post(
+        shotsUrl + 'info/', {
             params: {
                 table,
                 locations,
                 shot
             },
         });
-    if (!isuccess || istatus !== 200) {
-        listener('Unable to retrieve shot information');
+    if (isError(shotInfoResp, 'Unable to retrieve shot information')) {
         return;
     }
-    listener(imessage);
+    const shotInfo = _.get(shotInfoResp, 'data.shot-info');
 
-    console.log('shot info', shotInfo);
+    const graphicsResp = await axios.post(
+        graphicsUrl + 'shot-info/', { params: {
+            table,
+            locations,
+            'shot-info': shotInfo,
+            options: { 'draw-lines': state.drawLines}
+        }});
 
-    const {data: {message: gmessage, graphics, success: gsuccess}, status: gstatus} = await axios.post(
-        getApiUrl("Graphics", configData) + 'shot-info/', {
-            params: {
-                table,
-                locations,
-                'shot-info': shotInfo,
-            },
-        });
-    if (!gsuccess || gstatus !== 200) {
-        listener('Unable to retrieve graphics');
+    console.log('graphics response', graphicsResp);
+
+    if (isError(graphicsResp, 'Unable to generate graphics')) {
         return;
     }
-    listener(gmessage);
+    const graphics = _.get(graphicsResp, 'data.graphics', []);
+    setGraphics(graphics);
 
-    console.log('graphics', graphics);
-    graphics_receiver(graphics);
-
-    const {data: {message: pmessage, success: psuccess}, status: pstatus} = await axios.put(
-        getApiUrl("Projector", configData) + 'graphics/', {graphics}
-    );
-    if (!psuccess || pstatus !== 200) {
-        listener('Unable to post graphics');
+    const projResp = await axios.put(projectorUrl + 'graphics/', {graphics});
+    if (isError(projResp, 'Unable to post graphics')) {
         return;
     }
-    listener(pmessage);
+    listener('Success');
 };
 
