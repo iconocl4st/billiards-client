@@ -1,7 +1,7 @@
 
-import {BorderedStyle, CompStyle} from "../styles";
+import {BorderedStyle, CompStyle} from "../../styles";
 import React, {useState} from "react";
-import SaveDelay from "../SaveDelay";
+import SaveDelay from "../../SaveDelay";
 import _ from "lodash";
 
 

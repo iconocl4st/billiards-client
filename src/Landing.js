@@ -12,7 +12,7 @@ import CheckerBoard from "./Settings/CheckerBoard";
 import Camera from "./Settings/CameraLocation";
 import TableDimensions from "./Settings/PoolConfiguration/TableDimensions";
 import ApiStatus from "./Settings/ApiStatuses";
-import ProjectorMapping from "./Settings/ProjectorMapping";
+import ProjectorMapping from "./Settings/ProjectorLocation/ProjectorMapping";
 import Pockets from "./Settings/PoolConfiguration/Pockets";
 import Balls from "./Settings/PoolConfiguration/Balls";
 import RandomLocations from "./RandomLocations";

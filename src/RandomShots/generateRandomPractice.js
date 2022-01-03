@@ -3,7 +3,7 @@ import axios from 'axios';
 import {BY_VALUE} from "./PracticeTypes";
 import {showGrid} from './showGrid';
 
-const respHandler = listener => (resp, msg) => {
+export const respHandler = listener => (resp, msg) => {
 	if (resp.status !== 200 || resp.statusText !== 'OK') {
 		listener('Unable to ' + msg);
 		return true;
