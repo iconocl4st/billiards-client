@@ -16,7 +16,7 @@ export const showGrid = (w, h, nx, ny) => {
 	return [{
 		type: 'lines',
 		fill: false,
-		'line-width': 0.5,
+		'line-width': 0.25,
 		color: {r: 255, g: 255, b: 255, a: 255},
 		segments,
 	}];
@@ -59,7 +59,7 @@ export const showDottedGrid = (w, h, nx, ny, dist) => {
 	return [{
 		type: 'lines',
 		fill: false,
-		'line-width': 0.5,
+		'line-width': 0.05,
 		color: {r: 255, g: 255, b: 255, a: 255},
 		segments,
 	}];

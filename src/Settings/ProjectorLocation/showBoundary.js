@@ -44,10 +44,11 @@ const showBoundary = (projectorUrl, map, listener) => async () => {
 		color: {r: 0, g: 255, b: 0, a: 255},
 	});
 
+	// Use the max of all the max/min of all the x/y values
 	const graphics = [
+		...showDottedGrid(92, 46, 30, 15, 1),
 		...constructTriangles(points),
 		...points.map(createCircle),
-		// ...showDottedGrid()
 	];
 
 	console.log('graphics', graphics, map);
