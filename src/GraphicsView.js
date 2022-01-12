@@ -56,6 +56,7 @@ const drawGraphic = (ctx, g) => {
 		'lines': drawLine,
 		'circle': drawCircle,
 		'polygon': drawPolygon,
+		'text': () => {}
 	}[g.type];
 
 	drawer(ctx, g);

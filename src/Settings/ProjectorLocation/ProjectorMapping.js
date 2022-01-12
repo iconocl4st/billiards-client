@@ -6,6 +6,7 @@ import UpdateGraphicsControl from "./UpdateGraphicsControl";
 import ScreenSizeControl from "./ScreenSizeControl";
 import GeometryControl from "./GeometryControl";
 import getShowBoundary from "./showBoundary";
+import AllAtOnceEditor from "./AllAtOnceEditor";
 
 
 const ProjectorMapping = props => {
@@ -35,7 +36,8 @@ const ProjectorMapping = props => {
     };
     return (
         <>
-            <UpdateGraphicsControl message={message} showBoundary={showBoundary}/>
+            <UpdateGraphicsControl message={message} showBoundary={showBoundary} refresh={refresh}/>
+            <AllAtOnceEditor projectorUrl={projectorUrl} setMap={setMap}/>
             <ScreenSizeControl map={map} setMap={setMap} refresh={refresh} screenSize={screenSize}/>
             <GeometryControl map={map} setMap={setMap} refresh={refresh} screenSize={screenSize}/>
         </>

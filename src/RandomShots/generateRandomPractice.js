@@ -44,6 +44,7 @@ export const generateRandomPractice = async state => {
 	const practiceType = _.get(state, 'practiceType', 'no practice type');
 	const drawLines = _.get(state, 'drawLines', true);
 	const useDots = _.get(state, 'useDots', false);
+	const showLabels = _.get(state, 'showLabels', true);
 	const setGraphics = _.get(state, 'setGraphics', () => {});
 
 	const practiceSpec = _.get(BY_VALUE, `${practiceType}.options`, []);
@@ -77,7 +78,7 @@ export const generateRandomPractice = async state => {
 			graphicsUrl + 'layout/',
 			{ params: {
 				layout: detailedLayout,
-				options: {'draw-lines': drawLines, 'use-dots': useDots}}});
+				options: {'draw-lines': drawLines, 'use-dots': useDots, 'show-labels': showLabels}}});
 		if (isError(renderResp, 'render shot')) {
 			return;
 		}

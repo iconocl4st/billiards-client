@@ -50,6 +50,11 @@ const GlobalOptions = props => {
 			value={!!props.useDots}
 			setValue={props.setUseDots}
 		/><div/>
+		<BoolSetting
+			label="Show labels"
+			value={!!props.showLabels}
+			setValue={props.setShowLabels}
+		/><div/>
 		<NumberSetting
 			label="Cut Threshold"
 			value={props.minCut}
@@ -95,6 +100,8 @@ const RandomShots2 = ({configState}) => {
 	state = {...state, drawLines, setDrawLines};
 	const [useDots, setUseDots] = useState(false);
 	state = {...state, useDots, setUseDots};
+	const [showLabels, setShowLabels] = useState(true);
+	state = {...state, showLabels, setShowLabels};
 	const [useSeed, setUseSeed] = useState(false);
 	state = {...state, useSeed, setUseSeed};
 	const [seed, setSeed] = useState(1776);
